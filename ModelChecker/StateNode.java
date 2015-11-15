@@ -39,4 +39,12 @@ public class StateNode {
 		return parents;
 	}
 	
+	public Boolean isLeaf() {
+		if (children.size() == 0) {
+			return True;
+		} else {
+			return False;
+		}
+	}
+	
 }
