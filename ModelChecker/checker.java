@@ -7,29 +7,27 @@ import java.util.Set;
 
 public class checker {
 	//model checker for property1 until property2
-	public Set<StateNode> untilChecker(List<StateNode> input, int property1Index, 
-			int property2Index ){
+	public List<StateNode> untilChecker(List<StateNode> input1, List<StateNode> input2 ){
 		
-		HashSet<StateNode> result = new HashSet<StateNode>();
+		List<StateNode> result = new ArrayList<StateNode>();
 		List<StateNode> subList = new ArrayList<StateNode>();
 		
-		for(StateNode node : input) {
-			if(node.getPorperty(property2Index)) {
+		for(StateNode node : input2) {
 				subList.add(node);
 				result.add(node);
-			}
 		}
 		
 		while(subList.size() != 0){
 			List<StateNode> tempSubList = new ArrayList<StateNode>();
 			
-			for(StateNode oldNode : subList){
-				for(StateNode newNode : oldNode.getParents()){
-					if(!result.contains(newNode) && newNode.getPorperty(property1Index)) 
-						tempSubList.add(newNode);
+			for(StateNode newNode : input1) {
+				if(!result.contains(newNode)) {
+					for(StateNode child : newNode.getChildren()){
+						if(subList.contains(child)) tempSubList.add(newNode);
+					}
 				}
 			}
-			
+						
 			subList = new ArrayList<StateNode>(tempSubList);
 			for(StateNode node : tempSubList){
 				result.add(node);
@@ -76,8 +74,19 @@ public class checker {
 		input.add(a3);
 		input.add(a4);
 		input.add(a5);
+		
 		checker temp = new checker();
-		int a = temp.untilChecker(input,0,1).size();
+		List<StateNode> list1 = new ArrayList<StateNode>();
+		List<StateNode> list2 = new ArrayList<StateNode>();
+		
+		list1.add(a1);
+		list1.add(a2);
+		list1.add(a4);
+		list1.add(a5);
+		list2.add(a4);
+		list2.add(a5);
+		
+		int a = temp.untilChecker(list1, list2).size();
 			
 		System.out.println(a);
 		
