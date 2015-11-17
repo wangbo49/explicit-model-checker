@@ -2,54 +2,65 @@ package model_checker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util;
 
-public class scc {
+public class Tarjan {
 
-    private boolean[] marked;        // marked[v] = has v been visited?
+    private int V;
+    private List<StateNode> Graph;
+	private boolean[] visited;        // marked[v] = has v been visited?
     private int[] id;                // id[v] = id of strong component containing v
     private int[] low;               // low[v] = low number of v
     private int pre;                 // preorder number counter
     private int count;               // number of strongly-connected components
     private Stack<Integer> stack;
+    private List<List<StateNode>> sccComp;
 
     /**
      * Computes the strong components of the digraph <tt>G</tt>.
      * @param List of nodes
      */
     
-    public scc(List<StateNode> Graph) {
-        mark = new Boolean[Graph.size()];
+    public List<List<StateNode>> getSccComponents(List<StateNode>[] Graph) {
+    	this.Graph =  Graph;
+        visited = new Boolean[Graph.size()];
         stack = new Stack<StateNode>();
-        id = new int[Graph.size()]; 
         low = new int[Graph.size()];
+        sccComp = new ArrayList<>();
+        
         for (int v = 0; v < Graph.size(); v++) {
-            if (!marked[v]) dfs(Graph, v);
-        }
+            if (!marked[v]) dfs(v);
+        } 
+        
+        return sccComp;
     }
 
-    private void dfs(List<StateNode> G, int v) { 
-        marked[v] = true;
+    private void dfs(int v) { 
+        
+    	visited[v] = true;
         low[v] = pre++;
         int min = low[v];
-        stack.push(Graph[v]);
+        stack.push(v);
         for (StateNode k : G[v].children) {
         	int w = getIdx(k);
-            if (!marked[w]) dfs(G, k);
+            if (!marked[w]) dfs(w);
             if (low[w] < min) min = low[w];
         }
         if (min < low[v]) {
             low[v] = min;
             return;
         }
+        
+        List<StateNode> component = new ArrayList<StateNode>();
         int m;
         do {
             m = getIdx(stack.pop());
-            id[m] = count;
+            component.add(m);
             low[m] = G[v];
         } while (m != v);
+        sccComp.add(component);
         count++;
     }
-
 
     /**
      * Returns the number of strong components.
@@ -72,25 +83,26 @@ public class scc {
     	}
     	return -1; 	
     }
-
-    /**
-     * @param v one vertex
-     * @param w the other vertex
-     * @return <tt>true</tt> if vertices <tt>v</tt> and <tt>w</tt> are in the same
-     *     strong component, and <tt>false</tt> otherwise
-     */
-    public boolean stronglyConnected(int v, int w) {
-        return id[v] == id[w];
-    }
-
-    /**
-     * Returns the component id of the strong component containing vertex <tt>v</tt>.
-     * @param v the vertex
-     * @return the component id of the strong component containing vertex <tt>v</tt>
-     */
-    public int id(int v) {
-        return id[v];
-    }
-
-
+  
 }
+
+
+///** main **/
+//public static void main(String[] args)
+//{    
+//    Scanner scan = new Scanner(System.in);
+//    System.out.println("Tarjan algorithm Test\n");
+//    System.out.println("Enter number of Vertices");
+//    /** number of vertices **/
+//    int V = scan.nextInt();
+//
+//    /** TODO: make graph g**/
+//   
+//
+//    Tarjan t = new Tarjan();        
+//    System.out.println("\nSCC : ");
+//    /** print all strongly connected components **/
+//    List<List<Integer>> scComponents = t.getSCComponents(g);
+//       System.out.println(scComponents);        
+//}    
+//}
