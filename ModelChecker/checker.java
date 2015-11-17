@@ -8,8 +8,8 @@ import java.util.Set;
 public class checker {
 	
 	//property1 AND property2
-	public List<StateNode> andOperator(List<StateNode> input1, List<StateNode> input2 ){
-		List<StateNode> result = new ArrayList<StateNode>();
+	public Set<StateNode> andOperator(Set<StateNode> input1, Set<StateNode> input2 ){
+		Set<StateNode> result = new HashSet<StateNode>();
 		
 		for(StateNode node: input1){
 			if(input2.contains(node)) result.add(node);
@@ -19,8 +19,9 @@ public class checker {
 	}
 	
 	//property1 OR property2
-	public List<StateNode> orOperator(List<StateNode> input1, List<StateNode> input2){
-		List<StateNode> result = new ArrayList<StateNode>(input1);
+	public Set<StateNode> orOperator(Set<StateNode> input1, Set<StateNode> input2){
+		Set<StateNode> result = new HashSet<StateNode>(input1);
+		
 		for(StateNode node : input2){
 			result.add(node);
 		}
@@ -29,8 +30,8 @@ public class checker {
 	}
 	
 	//not property
-	public List<StateNode> notOperator(List<StateNode> inputAll, List<StateNode> input){
-		List<StateNode> result = new ArrayList<StateNode>(inputAll);
+	public Set<StateNode> notOperator(Set<StateNode> inputAll, Set<StateNode> input){
+		Set<StateNode> result = new HashSet<StateNode>(inputAll);
 		
 		for(StateNode node : input){
 			result.remove(node);
@@ -40,17 +41,17 @@ public class checker {
 	}
 	
 	//property1 -> property2
-	public List<StateNode> implyOperator(List<StateNode> inputAll, List<StateNode> input1, List<StateNode> input2){
-		List<StateNode> result = orOperator(notOperator(inputAll, input1), input2);
+	public Set<StateNode> implyOperator(Set<StateNode> inputAll, Set<StateNode> input1, Set<StateNode> input2){
+		Set<StateNode> result = orOperator(notOperator(inputAll, input1), input2);
 		
 		return result;
 	}
 	
 	
 	//model checker for E(property1 until property2)
-	public List<StateNode> untilChecker(List<StateNode> input1, List<StateNode> input2 ){
-		List<StateNode> result = new ArrayList<StateNode>();
-		List<StateNode> subList = new ArrayList<StateNode>();
+	public Set<StateNode> untilChecker(Set<StateNode> input1, Set<StateNode> input2 ){
+		Set<StateNode> result = new HashSet<StateNode>();
+		Set<StateNode> subList = new HashSet<StateNode>();
 		
 		for(StateNode node : input2) {
 			subList.add(node);
@@ -58,7 +59,7 @@ public class checker {
 		}
 		
 		while(subList.size() != 0){
-			List<StateNode> tempSubList = new ArrayList<StateNode>();
+			Set<StateNode> tempSubList = new HashSet<StateNode>();
 			
 			for(StateNode newNode : input1) {
 				if(!result.contains(newNode)) {
@@ -68,7 +69,7 @@ public class checker {
 				}
 			}
 						
-			subList = new ArrayList<StateNode>(tempSubList);
+			subList = new HashSet<StateNode>(tempSubList);
 			for(StateNode node : tempSubList){
 				result.add(node);
 			}					
@@ -79,8 +80,8 @@ public class checker {
 	}
 	
 	//model checker for EX property
-	public List<StateNode> nextChecker(List<StateNode> inputAll, List<StateNode> input1) {
-		List<StateNode> result = new ArrayList<StateNode>();
+	public Set<StateNode> nextChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
+		Set<StateNode> result = new HashSet<StateNode>();
 		
 		for(StateNode node : inputAll){
 			for(StateNode child : node.getChildren()){
@@ -95,7 +96,7 @@ public class checker {
 	}
 	
 	//main method for testing
-	public static void main(String[] args){
+	/*public static void main(String[] args){
 		StateNode a1 = new StateNode();
 		StateNode a2 = new StateNode();
 		StateNode a3 = new StateNode();
@@ -147,5 +148,5 @@ public class checker {
 			
 		System.out.println(a);
 		
-	}
+	}*/
 }
