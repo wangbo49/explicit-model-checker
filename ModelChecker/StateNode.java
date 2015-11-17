@@ -6,13 +6,13 @@ import java.util.List;
 public class StateNode {
 	private List<Boolean> property;
 	private List<StateNode> children;
-	private List<StateNode> parents;
+	//private List<StateNode> parents;
 	
 	//constructor
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
-		parents = new ArrayList<StateNode>();
+		//parents = new ArrayList<StateNode>();
 	}
 	
 	public void setProperty(boolean p){
@@ -31,12 +31,12 @@ public class StateNode {
 		return children;
 	}
 	
-	public void setParents(StateNode parent){
+	/*public void setParents(StateNode parent){
 		parents.add(parent);
 	}
 	
 	public List<StateNode> getParents() {
 		return parents;
-	}
+	}*/ß
 	
 }
