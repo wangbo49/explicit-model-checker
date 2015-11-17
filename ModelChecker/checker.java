@@ -47,9 +47,8 @@ public class checker {
 	}
 	
 	
-	//model checker for property1 until property2
+	//model checker for E(property1 until property2)
 	public List<StateNode> untilChecker(List<StateNode> input1, List<StateNode> input2 ){
-		
 		List<StateNode> result = new ArrayList<StateNode>();
 		List<StateNode> subList = new ArrayList<StateNode>();
 		
@@ -79,6 +78,23 @@ public class checker {
 		
 	}
 	
+	//model checker for EX property
+	public List<StateNode> nextChecker(List<StateNode> inputAll, List<StateNode> input1) {
+		List<StateNode> result = new ArrayList<StateNode>();
+		
+		for(StateNode node : inputAll){
+			for(StateNode child : node.getChildren()){
+				if(input1.contains(child)) {
+					result.add(node);
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	//main method for testing
 	public static void main(String[] args){
 		StateNode a1 = new StateNode();
 		StateNode a2 = new StateNode();
