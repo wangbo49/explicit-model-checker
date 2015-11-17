@@ -6,6 +6,47 @@ import java.util.List;
 import java.util.Set;
 
 public class checker {
+	
+	//property1 AND property2
+	public List<StateNode> andOperator(List<StateNode> input1, List<StateNode> input2 ){
+		List<StateNode> result = new ArrayList<StateNode>();
+		
+		for(StateNode node: input1){
+			if(input2.contains(node)) result.add(node);
+		}
+		
+		return result;
+	}
+	
+	//property1 OR property2
+	public List<StateNode> orOperator(List<StateNode> input1, List<StateNode> input2){
+		List<StateNode> result = new ArrayList<StateNode>(input1);
+		for(StateNode node : input2){
+			result.add(node);
+		}
+		
+		return result;
+	}
+	
+	//not property
+	public List<StateNode> notOperator(List<StateNode> inputAll, List<StateNode> input){
+		List<StateNode> result = new ArrayList<StateNode>(inputAll);
+		
+		for(StateNode node : input){
+			result.remove(node);
+		}
+		
+		return result;
+	}
+	
+	//property1 -> property2
+	public List<StateNode> implyOperator(List<StateNode> inputAll, List<StateNode> input1, List<StateNode> input2){
+		List<StateNode> result = orOperator(notOperator(inputAll, input1), input2);
+		
+		return result;
+	}
+	
+	
 	//model checker for property1 until property2
 	public List<StateNode> untilChecker(List<StateNode> input1, List<StateNode> input2 ){
 		
@@ -13,8 +54,8 @@ public class checker {
 		List<StateNode> subList = new ArrayList<StateNode>();
 		
 		for(StateNode node : input2) {
-				subList.add(node);
-				result.add(node);
+			subList.add(node);
+			result.add(node);
 		}
 		
 		while(subList.size() != 0){
