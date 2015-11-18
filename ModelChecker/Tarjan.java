@@ -29,7 +29,7 @@ public class Tarjan {
         sccComp = new ArrayList<>();
         
         for (int v = 0; v < Graph.size(); v++) {
-            if (!marked[v]) dfs(v);
+            if (!visited[v]) dfs(v);
         } 
         
         return sccComp;
@@ -41,9 +41,9 @@ public class Tarjan {
         low[v] = pre++;
         int min = low[v];
         stack.push(v);
-        for (StateNode k : G[v].children) {
+        for (StateNode k : G[v].children()) {
         	int w = getIdx(k);
-            if (!marked[w]) dfs(w);
+            if (!visited[w]) dfs(w);
             if (low[w] < min) min = low[w];
         }
         if (min < low[v]) {

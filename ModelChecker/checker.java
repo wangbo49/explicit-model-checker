@@ -40,6 +40,12 @@ public class checker {
 		
 	}
 	
+	public Set<StateNode> egChecker(List<StateNode> input, int property1Index){
+	
+	
+	
+	
+	
 	public static void main(String[] args){
 		StateNode a1 = new StateNode();
 		StateNode a2 = new StateNode();

@@ -31,6 +31,15 @@ public class StateNode {
 		return children;
 	}
 	
+	public List<StateNode> getChildrenByProperty(int index) {
+		ArrayList<StateNode> qualifiedChildren = new ArrayList<StateNode>();
+		for(StateNode node : children){
+		    if (node.property[index] == true) {
+                qualifiedChildren.add(node);
+		    }
+		} return qualifiedChildren;
+	}
+	
 	public void setParents(StateNode parent){
 		parents.add(parent);
 	}
