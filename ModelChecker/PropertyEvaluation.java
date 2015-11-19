@@ -32,7 +32,8 @@ public class PropertyEvaluation {
 		    }
 		    
 		    if(tree.operator.equals("AX")){
-		    	//TODO
+		    	result = c.notOperator(allinput, 
+		    			c.nextChecker(allinput, c.notOperator(allinput, evaluate(allinput, tree.right))));
 		    }
 		    
 		    if(tree.operator.equals("AU")) {
