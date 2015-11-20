@@ -1,16 +1,20 @@
 package model_checker;
 
+import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
 
 public class PropertyEvaluation {
+	class WrongFormatException extends Exception {
+	}
+
 	checker c = new checker();
 	Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
 
-	//method to convert the property string to a parse tree
-	public TreeNode parse(String property) {
+	// method to convert the property string to a parse tree
+	public TreeNode parse(String property) throws WrongFormatException {
 		String s = removeSpace(property);
 		Stack<TreeNode> values = new Stack<TreeNode>();
 		Stack<Character> operators = new Stack<Character>();
@@ -18,13 +22,15 @@ public class PropertyEvaluation {
 		for (int i = 0; i < s.length(); i++) {
 			Character c = s.charAt(i);
 			if (Character.isLowerCase(c)) {
-				// TODO check the top operator before putting it into values stack
+				// when char c represents an atomic property
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
 				pushValue(tree, values, operators);
 			} else {
 				if (c != ')')
+					// when char is not ')', put it into stack operators
 					operators.push(c);
 				else {
+					// when char is ')', deal with operations until “（” || “EU” || "AU"
 					while (true) {
 						String operator = popOperator(operators);
 						buildTree(operator, values, operators);
@@ -32,27 +38,33 @@ public class PropertyEvaluation {
 						    || operator.equals("AU"))
 							break;
 					}
-					TreeNode temp = values.pop();
-					pushValue(temp, values, operators);
+					try {
+						TreeNode temp = values.pop();
+						pushValue(temp, values, operators);
+					} catch (EmptyStackException e) {
+						throw new WrongFormatException();
+					}
 				}
 			}
 		}
 
 		while (operators.size() != 0) {
-			String operator = popOperator(operators);
+			String operator = popOperator(operators);// ??????
 			buildTree(operator, values, operators);
 		}
+		if (values.size() != 1)
+			throw new WrongFormatException();
 		return values.pop();
 	}
 
-	//method to evaluate the parse tree
+	// method to evaluate the parse tree
 	public Set<StateNode> evaluate(Set<StateNode> allinput, TreeNode tree) {
 		Set<StateNode> result = new HashSet<StateNode>();
 
 		if (tree.isAtomicProperty) {
 			return atomicPropertyStateSet.get(tree.atomicProperty); // hashTable.get[p]
-																															// --> set of
-																															// state nodes
+			                                                        // --> set of
+			                                                        // state nodes
 		}
 
 		if (tree.operator.equals("EX")) {
@@ -124,113 +136,129 @@ public class PropertyEvaluation {
 		return result.toString();
 	}
 
-	// find the index of the first left parenthesis's corresponding right
-	// parenthesis
-	public int findRightParenthesis(String s) {
-		int count = 0;
-
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '(')
-				count++;
-			if (s.charAt(i) == ')')
-				count--;
-			if (count == 0)
-				return i;
-		}
-		return -1;
-	}
-
-	// remove the character of index x from the string
-	public String removeCharacter(String s, int index) {
+	// method to recognize each operator and pop each operator from stack
+	// operators, such as "EU", "EF"
+	public String popOperator(Stack<Character> operators)
+	    throws WrongFormatException {
 		StringBuilder sb = new StringBuilder();
+		try {
+			Character top = operators.pop();
 
-		for (int i = 0; i < s.length(); i++) {
-			if (i != index)
-				sb.append(s.charAt(i));
+			if (top == 'F' || top == 'G' || top == 'X') {
+				if (operators.peek() != 'A' && operators.peek() != 'E') {
+					throw new WrongFormatException();
+				}
+				sb.append(operators.pop()); // A or E
+				sb.append(top);
+			} else if (top == 'U') {
+				if (operators.peek() != '(') {
+					throw new WrongFormatException();
+				}
+				operators.pop(); // '('
+				if (operators.peek() != 'A' && operators.peek() != 'E') {
+					throw new WrongFormatException();
+				}
+				sb.append(operators.pop()); // A or E
+				sb.append(top);
+			} else if (top == '>') {
+				if (operators.peek() != '-') {
+					throw new WrongFormatException();
+				}
+				sb.append(operators.pop()); // '-'
+				sb.append(top);
+			} else {
+				if (top != '&' && top != '|' && top != '!' && top != '(') {
+					throw new WrongFormatException();
+				}
+				sb.append(top);
+			}
+		} catch (EmptyStackException e) {
+			throw new WrongFormatException();
 		}
-
 		return sb.toString();
 	}
-	
-	//method to recognize each operator and pop each operator from stack operators, such as "EU", "EF"
-	public String popOperator(Stack<Character> operators){
-		Character top = operators.pop();
-	  	StringBuilder sb = new StringBuilder();
-	  
-	  	if(top == 'F' || top == 'G' || top == 'X') {
-	      	sb.append(operators.pop()); // A or E
-	      	sb.append(top);
-	    } else if(top == 'U'){
-	    	operators.pop(); // '('
-	      	sb.append(operators.pop()); // A or E
-	      	sb.append(top);
-	    } else if(top == '>'){
-	      	sb.append(operators.pop()); // '-'
-	      	sb.append(top);
-	    }else{
-	    	sb.append(top);
-	    }
-	  	return sb.toString();
+
+	// method to push treenode to stack values, including checking the priority of
+	// the top element of stack operators before putting the treenode into the
+	// stack
+	// if the top operators is "!" || "^", deal with the operation immediately
+	public void pushValue(TreeNode tree, Stack<TreeNode> values,
+	    Stack<Character> operators) throws WrongFormatException {
+		if (operators.size() == 0) {
+			values.push(tree);
+			return;
+		}
+		if (operators.peek() == '!') {
+			TreeNode newTree = new TreeNode(false, null, Character.toString(operators
+			    .pop()));
+			newTree.right = tree;
+			pushValue(newTree, values, operators);
+		} else if (operators.peek() == '&') {
+			TreeNode newTree = new TreeNode(false, null, Character.toString(operators
+			    .pop()));
+			newTree.right = tree;
+			if (values.size() == 0) {
+				throw new WrongFormatException();
+			}
+			newTree.left = values.pop();
+			pushValue(newTree, values, operators);
+		} else {
+			values.push(tree);
+		}
 	}
-	
-	//method to push treenode to stack values, including checking the priority of the top element of stack operators
-	public void pushValue(TreeNode tree, Stack<TreeNode> values, Stack<Character> operators) {
-    	if (operators.size() == 0) {
-        	values.push(tree);
-        	return;
-    	}
-    	if (operators.peek() == '!') {
-        	TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
-        	newTree.right = tree;
-        	pushValue(newTree, values, operators);
-    	} else if (operators.peek() == '&') {
-        	TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
-        	newTree.right = tree;
-        	newTree.left = values.pop();
-        	pushValue(newTree, values, operators);
-    	} else {
-        	values.push(tree);
-    	}
+
+	// method to build the treenode
+	public void buildTree(String operator, Stack<TreeNode> values,
+	    Stack<Character> operators) throws WrongFormatException {
+		try {
+			if (operator.equals("EG") || operator.equals("EF")
+			    || operator.equals("EX") || operator.equals("AG")
+			    || operator.equals("AF") || operator.equals("AX")
+			    || operator.equals("!")) {
+				TreeNode tree = new TreeNode(false, null, operator);
+				tree.right = values.pop();
+				pushValue(tree, values, operators);
+			} else if (operator.equals("EU") || operator.equals("AU")
+			    || operator.equals("&") || operator.equals("|")
+			    || operator.equals("->")) {
+				TreeNode tree = new TreeNode(false, null, operator);
+				tree.right = values.pop();
+				tree.left = values.pop();
+				pushValue(tree, values, operators);
+			}
+		} catch (EmptyStackException e) {
+			throw new WrongFormatException();
+		}
+
 	}
-	//method to build the treenode
-	public void buildTree(String operator, Stack<TreeNode> values, Stack<Character> operators) {
-    	if (operator.equals("EG") || operator.equals("EF") || operator.equals("EX") ||
-        	operator.equals("AG") || operator.equals("AF") || operator.equals("AX") || operator.equals("!")) {
-        	TreeNode tree = new TreeNode(false, null, operator);
-        	tree.right = values.pop();
-        	pushValue(tree, values, operators);
-    	} else if(operator.equals("EU") || operator.equals("AU") || operator.equals("&") || 
-             	operator.equals("|") || operator.equals("->")){
-        	TreeNode tree = new TreeNode(false, null, operator);
-        	tree.right = values.pop();
-        	tree.left = values.pop();
-        	pushValue(tree, values, operators);
-    	}
-	}
-	
-	/******************Code for testing******************/
-	/*Test Case 1: "EG((EF p) & (EG q))" done*/
-	/*Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done*/
-	/*Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done*/
-	/*Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done*/
-	public void preOrder(TreeNode node){
-		if(node == null) {
+
+	/****************** Code for testing ******************/
+	/* Test Case 1: "EG((EF p) & (EG q))" done */
+	/* Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done */
+	/* Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done */
+	/* Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done */
+	public void preOrder(TreeNode node) {
+		if (node == null) {
 			System.out.println("#");
 			return;
 		}
-		
-		if(node.isAtomicProperty) System.out.println(node.atomicProperty);
-		else System.out.println(node.operator);
+
+		if (node.isAtomicProperty)
+			System.out.println(node.atomicProperty);
+		else
+			System.out.println(node.operator);
 		preOrder(node.left);
 		preOrder(node.right);
 	}
-	
-	public static void main(String args[]){
+
+	public static void main(String args[]) {
 		String test = "E((EX(p -> q)) U (AF !E(p U q)))";
 		PropertyEvaluation t = new PropertyEvaluation();
-		TreeNode result = t.parse(test);
-		t.preOrder(result);
+		try {
+			TreeNode result = t.parse(test);
+			t.preOrder(result);
+		} catch (WrongFormatException e) {
+			System.out.println("Wrong Format!");
+		}
 	}
 }
-
- 
