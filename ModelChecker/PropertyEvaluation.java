@@ -175,37 +175,37 @@ public class PropertyEvaluation {
 	
 	//method to push treenode to stack values, including checking the priority of the top element of stack operators
 	public void pushValue(TreeNode tree, Stack<TreeNode> values, Stack<Character> operators) {
-    if (operators.size() == 0) {
-        values.push(tree);
-        return;
-    }
-    if (operators.peek() == '!') {
-        TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
-        newTree.right = tree;
-        pushValue(newTree, values, operators);
-    } else if (operators.peek() == '&') {
-        TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
-        newTree.right = tree;
-        newTree.left = values.pop();
-        pushValue(newTree, values, operators);
-    } else {
-        values.push(tree);
-    }
-}
+    	if (operators.size() == 0) {
+        	values.push(tree);
+        	return;
+    	}
+    	if (operators.peek() == '!') {
+        	TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
+        	newTree.right = tree;
+        	pushValue(newTree, values, operators);
+    	} else if (operators.peek() == '&') {
+        	TreeNode newTree = new TreeNode(false, null, Character.toString(operators.pop()));
+        	newTree.right = tree;
+        	newTree.left = values.pop();
+        	pushValue(newTree, values, operators);
+    	} else {
+        	values.push(tree);
+    	}
+	}
 	//method to build the treenode
 	public void buildTree(String operator, Stack<TreeNode> values, Stack<Character> operators) {
-    if (operator.equals("EG") || operator.equals("EF") || operator.equals("EX") ||
-        operator.equals("AG") || operator.equals("AF") || operator.equals("AX") || operator.equals("!")) {
-        TreeNode tree = new TreeNode(false, null, operator);
-        tree.right = values.pop();
-        pushValue(tree, values, operators);
-    } else if(operator.equals("EU") || operator.equals("AU") || operator.equals("&") || 
-             operator.equals("|") || operator.equals("->")){
-        TreeNode tree = new TreeNode(false, null, operator);
-        tree.right = values.pop();
-        tree.left = values.pop();
-        pushValue(tree, values, operators);
-    }
+    	if (operator.equals("EG") || operator.equals("EF") || operator.equals("EX") ||
+        	operator.equals("AG") || operator.equals("AF") || operator.equals("AX") || operator.equals("!")) {
+        	TreeNode tree = new TreeNode(false, null, operator);
+        	tree.right = values.pop();
+        	pushValue(tree, values, operators);
+    	} else if(operator.equals("EU") || operator.equals("AU") || operator.equals("&") || 
+             	operator.equals("|") || operator.equals("->")){
+        	TreeNode tree = new TreeNode(false, null, operator);
+        	tree.right = values.pop();
+        	tree.left = values.pop();
+        	pushValue(tree, values, operators);
+    	}
 	}
 	
 	/******************Code for testing******************/
