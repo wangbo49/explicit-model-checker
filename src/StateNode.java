@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StateNode {
+	private int stateId;
 	private List<Boolean> property;
 	private List<StateNode> children;
-	private List<StateNode> parents;
 	
 	//constructor
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
-		parents = new ArrayList<StateNode>();
+		stateId = -1;
 	}
 	
 	public void setProperty(boolean p){
@@ -26,6 +26,14 @@ public class StateNode {
 	public void setChildren(StateNode child){
 		children.add(child);
 	}	
+	
+	public void setId(int id) {
+		stateId = id;
+	}
+	
+	public int getId(){
+		return stateId;
+	}
 	
 	public List<StateNode> getChildren(){
 		return children;
@@ -41,6 +49,7 @@ public class StateNode {
 	}
 	
 	public void setParents(StateNode parent){
+
 		parents.add(parent);
 	}
 	

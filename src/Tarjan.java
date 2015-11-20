@@ -7,42 +7,40 @@ import java.util;
 public class Tarjan {
 
     private int V;
-    private List<StateNode> Graph;
+    private Graph g;
 	private boolean[] visited;        // marked[v] = has v been visited?
     private int[] id;                // id[v] = id of strong component containing v
     private int[] low;               // low[v] = low number of v
     private int pre;                 // preorder number counter
     private int count;               // number of strongly-connected components
     private Stack<Integer> stack;
-    private List<List<StateNode>> sccComp;
+    private Set<Set<StateNode>> sccComp;
 
     /**
      * Computes the strong components of the digraph <tt>G</tt>.
      * @param List of nodes
      */
     
-    public List<List<StateNode>> getSccComponents(List<StateNode>[] Graph) {
-    	this.Graph =  Graph;
-        visited = new Boolean[Graph.size()];
+    public List<List<StateNode>> getSccComponents(Graph g) {
+    	this.Graph =  g;
+        visited = new Boolean[g.size()];
         stack = new Stack<StateNode>();
-        low = new int[Graph.size()];
+        low = new int[g.size()];
         sccComp = new ArrayList<>();
         
         for (int v = 0; v < Graph.size(); v++) {
             if (!visited[v]) dfs(v);
-        } 
-        
+        }     
         return sccComp;
     }
 
     private void dfs(int v) { 
-        
     	visited[v] = true;
         low[v] = pre++;
         int min = low[v];
         stack.push(v);
-        for (StateNode k : G[v].children()) {
-        	int w = getIdx(k);
+        for (StateNode k : g.getNode(v).children()) {
+        	int w = k.getId();
             if (!visited[w]) dfs(w);
             if (low[w] < min) min = low[w];
         }
@@ -52,11 +50,11 @@ public class Tarjan {
         }
         
         List<StateNode> component = new ArrayList<StateNode>();
-        int m;
+        StateNode m;
         do {
-            m = getIdx(stack.pop());
+            m = stack.pop();
             component.add(m);
-            low[m] = G[v];
+            low[m.getId()] = V;
         } while (m != v);
         sccComp.add(component);
         count++;
