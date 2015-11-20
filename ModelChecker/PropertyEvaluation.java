@@ -118,7 +118,7 @@ public class PropertyEvaluation {
 
 		for (int i = 0; i < s.length(); i++) {
 			if (s.charAt(i) != (' '))
-				result.append(c);
+				result.append(s.charAt(i));
 		}
 
 		return result.toString();
