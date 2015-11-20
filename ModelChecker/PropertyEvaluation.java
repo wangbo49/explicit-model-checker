@@ -206,5 +206,31 @@ public class PropertyEvaluation {
         tree.left = values.pop();
         pushValue(tree, values, operators);
     }
+	}
+	
+	/******************Code for testing******************/
+	/*Test Case 1: "EG((EF p) & (EG q))" done*/
+	/*Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done*/
+	/*Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done*/
+	/*Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done*/
+	public void preOrder(TreeNode node){
+		if(node == null) {
+			System.out.println("#");
+			return;
+		}
+		
+		if(node.isAtomicProperty) System.out.println(node.atomicProperty);
+		else System.out.println(node.operator);
+		preOrder(node.left);
+		preOrder(node.right);
+	}
+	
+	public static void main(String args[]){
+		String test = "E((EX(p -> q)) U (AF !E(p U q)))";
+		PropertyEvaluation t = new PropertyEvaluation();
+		TreeNode result = t.parse(test);
+		t.preOrder(result);
+	}
 }
-}
+
+ 
