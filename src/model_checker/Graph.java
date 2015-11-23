@@ -1,19 +1,12 @@
 package model_checker;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Graph {
 	
 	private Set<StateNode> nodes;
-	
-	//constructor
-	public graph(){
-		nodes = new Set<StateNode>();
-	}
-	
-    public void setNodes(Set<StateNode>[] inputNodes){
+    public void setNodes(Set<StateNode> inputNodes){
     	nodes = inputNodes;
     }
 	
@@ -22,11 +15,11 @@ public class Graph {
 	}
 	
 	public StateNode getNode(int id) {
-		StateNode returnNode = new StateNode;
-		Iterator<String> itr = nodes.iterator();  
+		StateNode returnNode = new StateNode();
+		Iterator<StateNode> itr = nodes.iterator();  
 	        while(itr.hasNext()){  
-	            StateNode node = iter.next(); 
-	            if (node.id == id) {
+	            StateNode node = itr.next(); 
+	            if (node.getId() == id) {
 	            	returnNode = node;
 	            } break;
 	        }  

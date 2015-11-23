@@ -2,6 +2,7 @@ package model_checker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class StateNode {
 	private int stateId;
@@ -39,22 +40,13 @@ public class StateNode {
 		return children;
 	}
 	
-	public List<StateNode> getChildrenByProperty(int index) {
-		ArrayList<StateNode> qualifiedChildren = new ArrayList<StateNode>();
-		for(StateNode node : children){
-		    if (node.property[index] == true) {
-                qualifiedChildren.add(node);
-		    }
-		} return qualifiedChildren;
+	public List<StateNode> getChildrenByProperty(Set<StateNode>property) {
+		List<StateNode> validChildren = new ArrayList<StateNode>();
+		for (StateNode s: children){
+			if (property.contains(s)) {
+				validChildren.add(s);
+			}
+		}
+		return validChildren;
 	}
-	
-	public void setParents(StateNode parent){
-
-		parents.add(parent);
-	}
-	
-	public List<StateNode> getParents() {
-		return parents;
-	}
-	
 }

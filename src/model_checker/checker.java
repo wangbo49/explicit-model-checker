@@ -95,10 +95,26 @@ public class checker {
 		return result;
 	}
 	
+	public Graph generateGraph(Set<StateNode> nodes) {
+		Graph g = new Graph();
+		for (StateNode s : nodes) {
+		    g.addNode(s);;
+		}
+		return g;
+	}
+	
 	// model checker for EG property
-	public Set<StateNode> alwaysChecker(set<StateNode> inputAll, Set<StateNode> input1) {
+	public Set<StateNode> alwaysChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
 		Set<StateNode> result = new HashSet<StateNode>();
-		Tarjan t = new Tarjan();    
+		Tarjan t = new Tarjan();
+		Graph g = generateGraph(inputAll);
+	    Set<Set<StateNode>> sccComponents = t.getSccComponents(g,input1);
+	    for (Set<StateNode> s : sccComponents) {
+	        if (s.size() > 1) {
+	        	result.addAll(s);
+	        }
+	    }
+		return result;    
 		
 	}
 
@@ -117,22 +133,18 @@ public class checker {
 		
 		a2.setProperty(true);
 		a2.setProperty(false);
-		a2.setParents(a1);
 		a2.setChildren(a3);
 		a2.setChildren(a5);
 		
 		a3.setProperty(false);
 		a3.setProperty(false);
-		a3.setParents(a2);
 		a3.setChildren(a4);
 		
 		a4.setProperty(true);
 		a4.setProperty(true);
-		a4.setParents(a3);
 		
 		a5.setProperty(true);
 		a5.setProperty(true);
-		a5.setParents(a2);
 		
 		List<StateNode> input = new ArrayList<StateNode>();
 		input.add(a1);
@@ -152,9 +164,9 @@ public class checker {
 		list2.add(a4);
 		list2.add(a5);
 		
-		int a = temp.untilChecker(list1, list2).size();
+//		int a = temp.untilChecker(list1, list2).size();
 			
-		System.out.println(a);
+//		System.out.println(a);
 		
 	}
 }
