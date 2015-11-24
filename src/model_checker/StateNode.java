@@ -2,17 +2,18 @@ package model_checker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class StateNode {
+	private int stateId;
 	private List<Boolean> property;
 	private List<StateNode> children;
-	//private List<StateNode> parents;
 	
 	//constructor
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
-		//parents = new ArrayList<StateNode>();
+		stateId = -1;
 	}
 	
 	public void setProperty(boolean p){
@@ -27,16 +28,25 @@ public class StateNode {
 		children.add(child);
 	}	
 	
+	public void setId(int id) {
+		stateId = id;
+	}
+	
+	public int getId(){
+		return stateId;
+	}
+	
 	public List<StateNode> getChildren(){
 		return children;
 	}
 	
-	/*public void setParents(StateNode parent){
-		parents.add(parent);
+	public List<StateNode> getChildrenByProperty(Set<StateNode>property) {
+		List<StateNode> validChildren = new ArrayList<StateNode>();
+		for (StateNode s: children){
+			if (property.contains(s)) {
+				validChildren.add(s);
+			}
+		}
+		return validChildren;
 	}
-	
-	public List<StateNode> getParents() {
-		return parents;
-	}*/ß
-	
 }

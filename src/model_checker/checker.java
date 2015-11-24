@@ -43,7 +43,6 @@ public class checker {
 	//property1 -> property2
 	public Set<StateNode> implyOperator(Set<StateNode> inputAll, Set<StateNode> input1, Set<StateNode> input2){
 		Set<StateNode> result = orOperator(notOperator(inputAll, input1), input2);
-		
 		return result;
 	}
 	
@@ -68,7 +67,7 @@ public class checker {
 					}
 				}
 			}
-						
+			
 			subList = new HashSet<StateNode>(tempSubList);
 			for(StateNode node : tempSubList){
 				result.add(node);
@@ -78,6 +77,7 @@ public class checker {
 		return result;
 		
 	}
+	
 	
 	//model checker for EX property
 	public Set<StateNode> nextChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
@@ -95,8 +95,32 @@ public class checker {
 		return result;
 	}
 	
+	public Graph generateGraph(Set<StateNode> nodes) {
+		Graph g = new Graph();
+		for (StateNode s : nodes) {
+		    g.addNode(s);;
+		}
+		return g;
+	}
+	
+	// model checker for EG property
+	public Set<StateNode> alwaysChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
+		Set<StateNode> result = new HashSet<StateNode>();
+		Tarjan t = new Tarjan();
+		Graph g = generateGraph(inputAll);
+	    Set<Set<StateNode>> sccComponents = t.getSccComponents(g,input1);
+	    for (Set<StateNode> s : sccComponents) {
+	        if (s.size() > 1) {
+	        	result.addAll(s);
+	        }
+	    }
+		return result;    
+		
+	}
+
+	
 	//main method for testing
-	/*public static void main(String[] args){
+	public static void main(String[] args){
 		StateNode a1 = new StateNode();
 		StateNode a2 = new StateNode();
 		StateNode a3 = new StateNode();
@@ -109,22 +133,18 @@ public class checker {
 		
 		a2.setProperty(true);
 		a2.setProperty(false);
-		a2.setParents(a1);
 		a2.setChildren(a3);
 		a2.setChildren(a5);
 		
 		a3.setProperty(false);
 		a3.setProperty(false);
-		a3.setParents(a2);
 		a3.setChildren(a4);
 		
 		a4.setProperty(true);
 		a4.setProperty(true);
-		a4.setParents(a3);
 		
 		a5.setProperty(true);
 		a5.setProperty(true);
-		a5.setParents(a2);
 		
 		List<StateNode> input = new ArrayList<StateNode>();
 		input.add(a1);
@@ -144,9 +164,9 @@ public class checker {
 		list2.add(a4);
 		list2.add(a5);
 		
-		int a = temp.untilChecker(list1, list2).size();
+//		int a = temp.untilChecker(list1, list2).size();
 			
-		System.out.println(a);
+//		System.out.println(a);
 		
-	}*/
+	}
 }
