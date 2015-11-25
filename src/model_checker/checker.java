@@ -95,6 +95,11 @@ public class checker {
 		return result;
 	}
 	
+	//model checker for EF property
+	public Set<StateNode> finallyChecker(Set<StateNode> inputAll, Set<StateNode> input1){
+		
+	}
+	
 	public Graph generateGraph(Set<StateNode> nodes) {
 		Graph g = new Graph();
 		for (StateNode s : nodes) {
@@ -115,58 +120,6 @@ public class checker {
 	        }
 	    }
 		return result;    
-		
-	}
-
-	
-	//main method for testing
-	public static void main(String[] args){
-		StateNode a1 = new StateNode();
-		StateNode a2 = new StateNode();
-		StateNode a3 = new StateNode();
-		StateNode a4 = new StateNode();
-		StateNode a5 = new StateNode();
-		
-		a1.setProperty(true);
-		a1.setProperty(false);
-		a1.setChildren(a2);
-		
-		a2.setProperty(true);
-		a2.setProperty(false);
-		a2.setChildren(a3);
-		a2.setChildren(a5);
-		
-		a3.setProperty(false);
-		a3.setProperty(false);
-		a3.setChildren(a4);
-		
-		a4.setProperty(true);
-		a4.setProperty(true);
-		
-		a5.setProperty(true);
-		a5.setProperty(true);
-		
-		List<StateNode> input = new ArrayList<StateNode>();
-		input.add(a1);
-		input.add(a2);
-		input.add(a3);
-		input.add(a4);
-		input.add(a5);
-		
-		checker temp = new checker();
-		List<StateNode> list1 = new ArrayList<StateNode>();
-		List<StateNode> list2 = new ArrayList<StateNode>();
-		
-		list1.add(a1);
-		list1.add(a2);
-		list1.add(a4);
-		list1.add(a5);
-		list2.add(a4);
-		list2.add(a5);
-		
-//		int a = temp.untilChecker(list1, list2).size();
-			
-//		System.out.println(a);
 		
 	}
 }
