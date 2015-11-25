@@ -7,12 +7,17 @@ import java.util.Set;
 import java.util.Stack;
 
 public class PropertyEvaluation {
+	public Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
 	class WrongFormatException extends Exception {
 	}
 
 	checker c = new checker();
-	Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
 
+	//constructor
+	public PropertyEvaluation(Hashtable<String, Set<StateNode>> atomicPropertyStateSet){
+		this.atomicPropertyStateSet = atomicPropertyStateSet;
+	}
+	
 	// method to convert the property string to a parse tree
 	public TreeNode parse(String property) throws WrongFormatException {
 		String s = removeSpace(property);
@@ -78,10 +83,11 @@ public class PropertyEvaluation {
 
 		if (tree.operator.equals("EF")) {
 			// TODO
+			
 		}
 
 		if (tree.operator.equals("EG")) {
-			// TODO
+			result = c.alwaysChecker(allinput, evaluate(allinput,tree.right));
 		}
 
 		if (tree.operator.equals("AX")) {
@@ -92,32 +98,36 @@ public class PropertyEvaluation {
 		}
 
 		if (tree.operator.equals("AU")) {
-			// TODO
+			Set<StateNode> temp1 = c.andOperator(c.notOperator(allinput, evaluate(allinput, tree.left)), c.notOperator(allinput, evaluate(allinput, tree.right)));//(!p & !q)
+			Set<StateNode> temp2 = c.notOperator(allinput, c.untilChecker(c.notOperator(allinput, evaluate(allinput, tree.right)), temp1 )); //!E(!q U temp1);
+			Set<StateNode> temp3 = c.notOperator(allinput, c.alwaysChecker(allinput, c.notOperator(allinput, evaluate(allinput, tree.right))));//!EG !q
+			result = c.andOperator(temp2, temp3);
 		}
 
 		if (tree.operator.equals("AF")) {
-			// TODO
+			//equivalent to !EG !p
+			result = c.notOperator(allinput, c.alwaysChecker(allinput, c.notOperator(allinput, evaluate(allinput, tree.right))));
 		}
 
 		if (tree.operator.equals("AG")) {
-			// TODO
+			// equivalent to !EF !p
 		}
 
-		if (tree.operator.equals("AND")) {
+		if (tree.operator.equals("&")) {
 			result = c.andOperator(evaluate(allinput, tree.left),
 			    evaluate(allinput, tree.right));
 		}
 
-		if (tree.operator.equals("OR")) {
+		if (tree.operator.equals("|")) {
 			result = c.orOperator(evaluate(allinput, tree.left),
 			    evaluate(allinput, tree.right));
 		}
 
-		if (tree.operator.equals("NOT")) {
+		if (tree.operator.equals("!")) {
 			result = c.notOperator(allinput, evaluate(allinput, tree.right));
 		}
 
-		if (tree.operator.equals("IMP")) {
+		if (tree.operator.equals("->")) {
 			result = c.implyOperator(allinput, evaluate(allinput, tree.left),
 			    evaluate(allinput, tree.right));
 		}
@@ -252,11 +262,59 @@ public class PropertyEvaluation {
 	}
 
 	public static void main(String args[]) {
-		String test = "E((EX(p -> q)) U (AF !E(p U q)))";
-		PropertyEvaluation t = new PropertyEvaluation();
+		//Construct Graph
+		StateNode a1 = new StateNode();
+		a1.setId(1);
+		StateNode a2 = new StateNode();
+		a2.setId(2);
+		StateNode a3 = new StateNode();
+		a3.setId(3);
+		StateNode a4 = new StateNode();
+		a4.setId(4);
+		StateNode a5 = new StateNode();
+		a5.setId(5);
+		StateNode a6 = new StateNode();
+		a6.setId(6);
+		
+		a1.setChildren(a2);
+		a1.setChildren(a5);
+		a2.setChildren(a3);
+		a2.setChildren(a4);
+		a3.setChildren(a4);
+		a5.setChildren(a6);
+		Set<StateNode> inputAll = new HashSet<StateNode>();
+		inputAll.add(a1);
+		inputAll.add(a2);
+		inputAll.add(a3);
+		inputAll.add(a4);
+		inputAll.add(a5);
+		inputAll.add(a6);
+		
+		Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
+		Set<StateNode> listp = new HashSet<StateNode>();
+		Set<StateNode> listq = new HashSet<StateNode>();
+		
+		listp.add(a1);
+		listp.add(a3);
+		listp.add(a4);
+		listq.add(a2);
+		listq.add(a4);
+		listq.add(a6);
+		
+		atomicPropertyStateSet.put("p", listp);
+		atomicPropertyStateSet.put("q", listq);
+		
+		//E((EX(p -> q)) U (EX !E(p U q)))
+		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
+		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
 		try {
-			TreeNode result = t.parse(test);
-			t.preOrder(result);
+			TreeNode r = t.parse(test);
+			//t.preOrder(r);
+			Set<StateNode> result = t.evaluate(inputAll, r);
+			for(StateNode s : result){
+				System.out.println(s.getId());
+			}
+			
 		} catch (WrongFormatException e) {
 			System.out.println("Wrong Format!");
 		}
