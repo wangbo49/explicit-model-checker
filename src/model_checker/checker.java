@@ -82,7 +82,6 @@ public class checker {
 	//model checker for EX property
 	public Set<StateNode> nextChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
 		Set<StateNode> result = new HashSet<StateNode>();
-		
 		for(StateNode node : inputAll){
 			for(StateNode child : node.getChildren()){
 				if(input1.contains(child)) {
@@ -96,14 +95,16 @@ public class checker {
 	}
 	
 	//model checker for EF property
+	// EF p = E (true U p)
 	public Set<StateNode> finallyChecker(Set<StateNode> inputAll, Set<StateNode> input1){
-		
+		return untilChecker(inputAll, input1);
 	}
+	
 	
 	public Graph generateGraph(Set<StateNode> nodes) {
 		Graph g = new Graph();
 		for (StateNode s : nodes) {
-		    g.addNode(s);;
+		    g.addNode(s);
 		}
 		return g;
 	}

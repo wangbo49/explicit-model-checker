@@ -264,17 +264,17 @@ public class PropertyEvaluation {
 	public static void main(String args[]) {
 		//Construct Graph
 		StateNode a1 = new StateNode();
-		a1.setId(1);
+		a1.setId(0);
 		StateNode a2 = new StateNode();
-		a2.setId(2);
+		a2.setId(1);
 		StateNode a3 = new StateNode();
-		a3.setId(3);
+		a3.setId(2);
 		StateNode a4 = new StateNode();
-		a4.setId(4);
+		a4.setId(3);
 		StateNode a5 = new StateNode();
-		a5.setId(5);
+		a5.setId(4);
 		StateNode a6 = new StateNode();
-		a6.setId(6);
+		a6.setId(5);
 		
 		a1.setChildren(a2);
 		a1.setChildren(a5);
@@ -305,7 +305,8 @@ public class PropertyEvaluation {
 		atomicPropertyStateSet.put("q", listq);
 		
 		//E((EX(p -> q)) U (EX !E(p U q)))
-		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
+//		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
+		String test = "EG p";
 		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
 		try {
 			TreeNode r = t.parse(test);
