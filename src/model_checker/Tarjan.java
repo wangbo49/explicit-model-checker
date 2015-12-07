@@ -1,6 +1,7 @@
 package model_checker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class Tarjan {
     public Set<Set<StateNode>> getSccComponents(Graph g, Set<StateNode> property) {
     	this.g =  g;
         visited = new Boolean[g.size()];
+        Arrays.fill(visited, Boolean.FALSE);
         stack = new Stack<StateNode>();
         low = new int[g.size()];
         sccComp = new HashSet<Set<StateNode>>();
@@ -52,7 +54,7 @@ public class Tarjan {
         }
         
         Set<StateNode> component = new HashSet<StateNode>();
-        StateNode m;
+        StateNode m = new StateNode();
         do {
             m = stack.pop();
             component.add(m);
