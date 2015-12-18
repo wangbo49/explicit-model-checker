@@ -1,5 +1,9 @@
 package model_checker;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -262,8 +266,41 @@ public class PropertyEvaluation {
 	}
 
 	public static void main(String args[]) {
+		//TODO call function to get the input statenode
+		//HashTable <StateNodeId, StateNode>
+		Hashtable<Integer,StateNode> stateTable = ;
+		Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
+		//if there is no property file
+		for(Integer nodeId : stateTable.keySet()){
+			String key = Integer.toString(nodeId);
+			Set<StateNode> value = new HashSet<StateNode>();
+			value.add(stateTable.get(nodeId));
+			atomicPropertyStateSet.put(key, value);
+		}
+		//if there is property file
+		try{
+			FileInputStream fstream = new FileInputStream(pathname);
+		    DataInputStream in = new DataInputStream(fstream);
+		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		    String strLine;
+		    while ((strLine = br.readLine()) != null) {
+		    	//strLine format: p 1,2,3,4
+		    	int spaceIndex = strLine.indexOf(" ");
+		    	String key = strLine.substring(0,spaceIndex);
+		    	String left = strLine.substring(spaceIndex, strLine.length());
+		    	String[] states = left.split("\\,");
+		    	Set<StateNode> value = new HashSet<StateNode>();
+		    	for(int i=0; i<states.length; i++){
+		    		value.add(stateTable.get(Integer.parseInt(states[i])));
+		    	}
+		    	atomicPropertyStateSet.put(key,value);
+		    }
+		} catch(Exception e){
+			System.out.println("ErrorMessage:");
+		}
+		
 		//Construct Graph
-		StateNode a1 = new StateNode();
+		/*StateNode a1 = new StateNode();
 		a1.setId(0);
 		StateNode a2 = new StateNode();
 		a2.setId(1);
@@ -305,7 +342,7 @@ public class PropertyEvaluation {
 		atomicPropertyStateSet.put("q", listq);
 		
 		//E((EX(p -> q)) U (EX !E(p U q)))
-//		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
+//		String test = "E((EX(p -> q)) U (EX !E(p U q)))";*/
 		String test = "EG p";
 		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
 		try {
