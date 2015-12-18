@@ -1,10 +1,22 @@
 package model_checker;
 
+import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
+import java.awt.List;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;  
+import java.io.BufferedReader;  
+import java.io.BufferedWriter;  
+import java.io.FileInputStream;  
+import java.io.FileWriter;  
 
 public class PropertyEvaluation {
 	public Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
@@ -260,64 +272,79 @@ public class PropertyEvaluation {
 		preOrder(node.left);
 		preOrder(node.right);
 	}
+	
+	
+	
+	public static HashMap<Integer,StateNode> createStateNode(String pathname) throws IOException{
+		HashMap<Integer,StateNode> result = new HashMap<Integer,StateNode>();
+		Hashtable<Integer,ArrayList<Integer>> nodeResult = new Hashtable<>();
+		int nodeSetSize = 0;
+	    Boolean isFirstLine = true;
+		try{
+		    FileInputStream fstream = new FileInputStream(pathname);
+		    DataInputStream in = new DataInputStream(fstream);
+		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		    String strLine;
+		    
+		    while ((strLine = br.readLine()) != null) {
+				String[] tokens = strLine.split(" ");
+				if (isFirstLine){
+		    		nodeSetSize = Integer.parseInt(tokens[0]);
+		    		isFirstLine = false;
+		    	} else {
+		    		if (nodeResult.containsKey(Integer.parseInt(tokens[0]))) {
+						nodeResult.get(Integer.parseInt(tokens[0])).add(Integer.parseInt(tokens[1]));
+					} else{
+						StateNode newNode = new StateNode();
+						newNode.setId(Integer.parseInt(tokens[0]));
+						result.put(Integer.parseInt(tokens[0]), newNode);
+						ArrayList<Integer> children = new ArrayList<Integer>();
+						children.add(Integer.parseInt(tokens[1]));
+						nodeResult.put(Integer.parseInt(tokens[0]),children);
+					}
+		    	}
+				}
+		    in.close();
+		    }catch (Exception e){
+		        System.err.println("Error: " + e.getMessage());
+		    }
+		
+		    Set<Integer> keys = nodeResult.keySet();
+		    for(int key: keys){
+				for (int child:nodeResult.get(key)) {
+					result.get(key).addChildren(result.get(child));
+				}
+		    }
+		  if (result.size() == nodeSetSize) {
+			  return result;
+		  } else {
+			  System.out.println("not equivalant nodeSize");
+			  return null;
+		  }
+		  }
+        
+        
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 		//Construct Graph
-		StateNode a1 = new StateNode();
-		a1.setId(0);
-		StateNode a2 = new StateNode();
-		a2.setId(1);
-		StateNode a3 = new StateNode();
-		a3.setId(2);
-		StateNode a4 = new StateNode();
-		a4.setId(3);
-		StateNode a5 = new StateNode();
-		a5.setId(4);
-		StateNode a6 = new StateNode();
-		a6.setId(5);
-		
-		a1.setChildren(a2);
-		a1.setChildren(a5);
-		a2.setChildren(a3);
-		a2.setChildren(a4);
-		a3.setChildren(a4);
-		a5.setChildren(a6);
-		Set<StateNode> inputAll = new HashSet<StateNode>();
-		inputAll.add(a1);
-		inputAll.add(a2);
-		inputAll.add(a3);
-		inputAll.add(a4);
-		inputAll.add(a5);
-		inputAll.add(a6);
-		
-		Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
-		Set<StateNode> listp = new HashSet<StateNode>();
-		Set<StateNode> listq = new HashSet<StateNode>();
-		
-		listp.add(a1);
-		listp.add(a3);
-		listp.add(a4);
-		listq.add(a2);
-		listq.add(a4);
-		listq.add(a6);
-		
-		atomicPropertyStateSet.put("p", listp);
-		atomicPropertyStateSet.put("q", listq);
-		
-		//E((EX(p -> q)) U (EX !E(p U q)))
-//		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
-		String test = "EG p";
-		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
-		try {
-			TreeNode r = t.parse(test);
-			//t.preOrder(r);
-			Set<StateNode> result = t.evaluate(inputAll, r);
-			for(StateNode s : result){
-				System.out.println(s.getId());
-			}
-			
-		} catch (WrongFormatException e) {
-			System.out.println("Wrong Format!");
-		}
+	    createStateNode("/Users/AnyiWANG/Downloads/file1.txt");
+//		atomicPropertyStateSet.put("p", listp);
+//		atomicPropertyStateSet.put("q", listq);
+//		
+//		//E((EX(p -> q)) U (EX !E(p U q)))
+////		String test = "E((EX(p -> q)) U (EX !E(p U q)))";
+//		String test = "EG p";
+//		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
+//		try {
+//			TreeNode r = t.parse(test);
+//			//t.preOrder(r);
+//			Set<StateNode> result = t.evaluate(inputAll, r);
+//			for(StateNode s : result){
+//				System.out.println(s.getId());
+//			}
+//			
+//		} catch (WrongFormatException e) {
+//			System.out.println("Wrong Format!");
+//		}
 	}
 }

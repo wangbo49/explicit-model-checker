@@ -9,7 +9,7 @@ public class StateNode {
 	private List<Boolean> property;
 	private List<StateNode> children;
 	
-	//constructor
+	// constructor
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
@@ -27,6 +27,10 @@ public class StateNode {
 	public void setChildren(StateNode child){
 		children.add(child);
 	}	
+	
+	public void addChildren(StateNode child){
+		children.add(child);
+	}
 	
 	public void setId(int id) {
 		stateId = id;
@@ -49,4 +53,5 @@ public class StateNode {
 		}
 		return validChildren;
 	}
+	
 }
