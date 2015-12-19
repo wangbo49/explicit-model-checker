@@ -26,30 +26,35 @@ public class Tarjan {
     
     public Set<Set<StateNode>> getSccComponents(Graph g, Set<StateNode> property) {
     	this.g =  g;
+    	pre = 0;
     	if (property==null){
-    		System.out.println("wow, property equals to null.");
+    		System.out.println("In Tarjain, the property equals to null.");
     		return null;
     	}
-        this.visited = new Boolean[g.size()];
+        visited = new Boolean[g.size()];
         Arrays.fill(this.visited, Boolean.FALSE);
-        this.stack = new Stack<StateNode>();
-        this.low = new int[g.size()];
-        this.sccComp = new HashSet<Set<StateNode>>();
+        stack = new Stack<StateNode>();
+        low = new int[g.size()];
+        sccComp = new HashSet<Set<StateNode>>();
         for (int v = 0; v < g.size(); v++) {
-            if (!this.visited[v]) dfs(v,property);
-        }     
-        return this.sccComp;
+            if (!visited[v]) dfs(v,property);
+        }
+        return sccComp;
     }
 
     private void dfs(int v, Set<StateNode> property) { 
     	visited[v] = true;
         low[v] = pre++;
         int min = low[v];
+    	System.out.println("min: " + g.getNode(v).getId());
         stack.push(g.getNode(v));
         for (StateNode k : g.getNode(v).getChildrenByProperty(property)) {
         	int w = k.getId();
+        	System.out.println("getId: " + w);
             if (!visited[w]) dfs(w,property);
-            if (low[w] < min) min = low[w];
+            if (low[w] < min) {
+            	min = low[w];
+            }
         }
         if (min < low[v]) {
             low[v] = min;
@@ -58,13 +63,18 @@ public class Tarjan {
         
         Set<StateNode> component = new HashSet<StateNode>();
         StateNode m = new StateNode();
-        do {
-            m = stack.pop();
-            component.add(m);
-            low[m.getId()] = V;
-        } while (m.getId() != V);
-        sccComp.add(component);
-        count++;
+        if (stack.size()>1) {
+        	do {
+                m = stack.pop();
+                component.add(m);
+                low[m.getId()] = V;
+            } while (m.getId() != V);
+        	sccComp.add(component);
+            count++;
+        } else {
+        	System.out.println("empty stack!");
+        } 
+        
     }
 
     /**
@@ -91,23 +101,3 @@ public class Tarjan {
   
 }
 
-
-///** main **/
-//public static void main(String[] args)
-//{    
-//    Scanner scan = new Scanner(System.in);
-//    System.out.println("Tarjan algorithm Test\n");
-//    System.out.println("Enter number of Vertices");
-//    /** number of vertices **/
-//    int V = scan.nextInt();
-//
-//    /** TODO: make graph g**/
-//   
-//
-//    Tarjan t = new Tarjan();        
-//    System.out.println("\nSCC : ");
-//    /** print all strongly connected components **/
-//    List<List<Integer>> scComponents = t.getSCComponents(g);
-//       System.out.println(scComponents);        
-//}    
-//}

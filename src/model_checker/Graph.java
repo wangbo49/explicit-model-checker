@@ -12,6 +12,7 @@ public class Graph {
 	public Graph(){
 		nodes = new HashSet<StateNode>();
 	}
+	
     public void setNodes(Set<StateNode> inputNodes){
     	nodes = inputNodes;
     }

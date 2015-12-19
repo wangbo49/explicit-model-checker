@@ -286,6 +286,7 @@ public class PropertyEvaluation {
 				result.add(current);
 				if (current.getChildren()!=null) {
 					for (StateNode child:current.getChildren()){
+						if (result.contains(child))
 						retrivalStack.add(child);
 					}
 				}
@@ -367,10 +368,7 @@ public class PropertyEvaluation {
 	}
 	
 	
-	
-	
-        
-
+ 
 
 	public static void main(String args[]) {
 		
@@ -378,7 +376,7 @@ public class PropertyEvaluation {
 		//HashTable <StateNodeId, StateNode>
 		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
 		try{
-			stateTable = createStateNode("/Users/bowang/Desktop/file1.txt");
+			stateTable = createStateNode("/Users/AnyiWang/Downloads/file1.txt");
 		} catch(IOException i){
 			System.out.println("Error:IOException");
 		}
@@ -417,7 +415,7 @@ public class PropertyEvaluation {
 			for(String i : atomicPropertyStateSet.keySet()){
 				Set<StateNode> set = atomicPropertyStateSet.get(i); 
 				for(StateNode n : set){
-					System.out.println(i + ": " + n.getId());
+//					System.out.println(i + ": " + n.getId());
 					
 				}
 			}
@@ -425,47 +423,6 @@ public class PropertyEvaluation {
 			System.out.println("ErrorMessage:");
 		}
 		
-		//Construct Graph
-		/*StateNode a1 = new StateNode();
-		a1.setId(0);
-		StateNode a2 = new StateNode();
-		a2.setId(1);
-		StateNode a3 = new StateNode();
-		a3.setId(2);
-		StateNode a4 = new StateNode();
-		a4.setId(3);
-		StateNode a5 = new StateNode();
-		a5.setId(4);
-		StateNode a6 = new StateNode();
-		a6.setId(5);
-		
-		a1.setChildren(a2);
-		a1.setChildren(a5);
-		a2.setChildren(a3);
-		a2.setChildren(a4);
-		a3.setChildren(a4);
-		a5.setChildren(a6);
-		Set<StateNode> inputAll = new HashSet<StateNode>();
-		inputAll.add(a1);
-		inputAll.add(a2);
-		inputAll.add(a3);
-		inputAll.add(a4);
-		inputAll.add(a5);
-		inputAll.add(a6);
-		
-		Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
-		Set<StateNode> listp = new HashSet<StateNode>();
-		Set<StateNode> listq = new HashSet<StateNode>();
-		
-		listp.add(a1);
-		listp.add(a3);
-		listp.add(a4);
-		listq.add(a2);
-		listq.add(a4);
-		listq.add(a6);
-		
-		atomicPropertyStateSet.put("p", listp);
-		atomicPropertyStateSet.put("q", listq);
 		
 		//E((EX(p -> q)) U (EX !E(p U q)))
 //		String test = "E((EX(p -> q)) U (EX !E(p U q)))";*/
