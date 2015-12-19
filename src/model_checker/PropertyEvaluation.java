@@ -43,7 +43,8 @@ public class PropertyEvaluation {
 
 		for (int i = 0; i < s.length(); i++) {
 			Character c = s.charAt(i);
-			if (Character.isLowerCase(c)) {
+			System.out.println(c);
+			if (Character.isDigit(c) || Character.isLowerCase(c)) {
 				// when char c represents an atomic property
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
 				pushValue(tree, values, operators);
@@ -64,6 +65,7 @@ public class PropertyEvaluation {
 						TreeNode temp = values.pop();
 						pushValue(temp, values, operators);
 					} catch (EmptyStackException e) {
+						System.out.println("1");
 						throw new WrongFormatException();
 					}
 				}
@@ -74,8 +76,11 @@ public class PropertyEvaluation {
 			String operator = popOperator(operators);// ??????
 			buildTree(operator, values, operators);
 		}
-		if (values.size() != 1)
+		if (values.size() != 1){
+			System.out.println("2");
 			throw new WrongFormatException();
+		}
+			
 		return values.pop();
 	}
 
@@ -99,8 +104,7 @@ public class PropertyEvaluation {
 		}
 
 		if (tree.operator.equals("EF")) {
-			// TODO
-			
+			result = c.finallyChecker(allinput, evaluate(allinput,tree.right));
 		}
 
 		if (tree.operator.equals("EG")) {
@@ -128,6 +132,7 @@ public class PropertyEvaluation {
 
 		if (tree.operator.equals("AG")) {
 			// equivalent to !EF !p
+			result = c.notOperator(allinput, c.finallyChecker(allinput, c.notOperator(allinput, evaluate(allinput, tree.right))));
 		}
 
 		if (tree.operator.equals("&")) {
@@ -173,33 +178,39 @@ public class PropertyEvaluation {
 
 			if (top == 'F' || top == 'G' || top == 'X') {
 				if (operators.peek() != 'A' && operators.peek() != 'E') {
+					System.out.println("3");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // A or E
 				sb.append(top);
 			} else if (top == 'U') {
 				if (operators.peek() != '(') {
+					System.out.println("4");
 					throw new WrongFormatException();
 				}
 				operators.pop(); // '('
 				if (operators.peek() != 'A' && operators.peek() != 'E') {
+					System.out.println("5");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // A or E
 				sb.append(top);
 			} else if (top == '>') {
 				if (operators.peek() != '-') {
+					System.out.println("6");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // '-'
 				sb.append(top);
 			} else {
 				if (top != '&' && top != '|' && top != '!' && top != '(') {
+					System.out.println("7");
 					throw new WrongFormatException();
 				}
 				sb.append(top);
 			}
 		} catch (EmptyStackException e) {
+			System.out.println("8");
 			throw new WrongFormatException();
 		}
 		return sb.toString();
@@ -225,6 +236,7 @@ public class PropertyEvaluation {
 			    .pop()));
 			newTree.right = tree;
 			if (values.size() == 0) {
+				System.out.println("10");
 				throw new WrongFormatException();
 			}
 			newTree.left = values.pop();
@@ -254,6 +266,7 @@ public class PropertyEvaluation {
 				pushValue(tree, values, operators);
 			}
 		} catch (EmptyStackException e) {
+			System.out.println("11");
 			throw new WrongFormatException();
 		}
 
@@ -337,7 +350,7 @@ public class PropertyEvaluation {
 		//HashTable <StateNodeId, StateNode>
 		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
 		try{
-			stateTable = createStateNode("/Users/AnyiWANG/Downloads/file1.txt");
+			stateTable = createStateNode("/Users/bowang/Desktop/file1.txt");
 		} catch(IOException i){
 			System.out.println("Error:IOException");
 		}
@@ -372,6 +385,13 @@ public class PropertyEvaluation {
 				Set<StateNode> value = new HashSet<StateNode>();
 				value.add(stateTable.get(nodeId));
 				atomicPropertyStateSet.put(key, value);
+			}
+			for(String i : atomicPropertyStateSet.keySet()){
+				Set<StateNode> set = atomicPropertyStateSet.get(i); 
+				for(StateNode n : set){
+					System.out.println(i + ": " + n.getId());
+					
+				}
 			}
 		}catch(Exception e){
 			System.out.println("ErrorMessage:");
@@ -421,11 +441,11 @@ public class PropertyEvaluation {
 		
 		//E((EX(p -> q)) U (EX !E(p U q)))
 //		String test = "E((EX(p -> q)) U (EX !E(p U q)))";*/
-		String test = "EG p";
+		String test = "EG 1";
 		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
 		try {
 			TreeNode r = t.parse(test);
-			//t.preOrder(r);
+			t.preOrder(r);
 			Set<StateNode> result = t.evaluate(inputAll, r);
 			if (result == null) {
 				System.out.println("there is no result that satisfies the rule");
@@ -436,6 +456,7 @@ public class PropertyEvaluation {
 				}
 			}			
 		} catch (WrongFormatException e) {
+			System.out.println("12");
 			System.out.println("Wrong Format!");
 		}
 
