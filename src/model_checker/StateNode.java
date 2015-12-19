@@ -46,10 +46,16 @@ public class StateNode {
 	
 	public List<StateNode> getChildrenByProperty(Set<StateNode> property) {
 		List<StateNode> validChildren = new ArrayList<StateNode>();
-		for (StateNode s: children){
-			if (property.contains(s)) {
-				validChildren.add(s);
-			}
+		if (property == null) {
+			System.out.println("property equals nothing!");
+			return null;
+		}
+		if (children.size()>0) {
+			for (StateNode s: children){
+				if (property.contains(s)) {
+					validChildren.add(s);
+				}
+			}	
 		}
 		return validChildren;
 	}

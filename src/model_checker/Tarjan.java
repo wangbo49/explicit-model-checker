@@ -26,12 +26,15 @@ public class Tarjan {
     
     public Set<Set<StateNode>> getSccComponents(Graph g, Set<StateNode> property) {
     	this.g =  g;
+    	if (property==null){
+    		System.out.println("wow, property equals to null.");
+    		return null;
+    	}
         visited = new Boolean[g.size()];
         Arrays.fill(visited, Boolean.FALSE);
         stack = new Stack<StateNode>();
         low = new int[g.size()];
-        sccComp = new HashSet<Set<StateNode>>();
-        
+//        sccComp = new HashSet<Set<StateNode>>();
         for (int v = 0; v < g.size(); v++) {
             if (!visited[v]) dfs(v,property);
         }     

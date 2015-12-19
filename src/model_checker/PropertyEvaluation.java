@@ -337,7 +337,7 @@ public class PropertyEvaluation {
 		//HashTable <StateNodeId, StateNode>
 		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
 		try{
-			stateTable = createStateNode("/Users/bowang/Desktop/file1.txt");
+			stateTable = createStateNode("/Users/AnyiWANG/Downloads/file1.txt");
 		} catch(IOException i){
 			System.out.println("Error:IOException");
 		}
@@ -427,10 +427,14 @@ public class PropertyEvaluation {
 			TreeNode r = t.parse(test);
 			//t.preOrder(r);
 			Set<StateNode> result = t.evaluate(inputAll, r);
-			for(StateNode s : result){
-				System.out.println(s.getId());
-			}
-			
+			if (result == null) {
+				System.out.println("there is no result that satisfies the rule");
+				
+			} else {
+				for(StateNode s : result){
+					System.out.println(s.getId());
+				}
+			}			
 		} catch (WrongFormatException e) {
 			System.out.println("Wrong Format!");
 		}

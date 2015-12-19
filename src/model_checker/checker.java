@@ -115,6 +115,10 @@ public class checker {
 		Tarjan t = new Tarjan();
 		Graph g = generateGraph(inputAll);
 	    Set<Set<StateNode>> sccComponents = t.getSccComponents(g,input1);
+	    if(sccComponents == null) {
+	    	System.out.println("no sccComponenets");
+	    	return null;
+	    }
 	    for (Set<StateNode> s : sccComponents) {
 	        if (s.size() > 1) {
 	        	result.addAll(s);
