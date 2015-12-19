@@ -1,2 +1,6 @@
 eclipse.preferences.version=1
+<<<<<<< HEAD
 org.eclipse.rse.systemtype.local.systemType.defaultUserId=bowang
+=======
+org.eclipse.rse.systemtype.local.systemType.defaultUserId=AnyiWANG
+>>>>>>> 8091a9f170b3d27b0bce8c4b45a74f178126d217

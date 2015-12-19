@@ -9,7 +9,7 @@ public class StateNode {
 	private List<Boolean> property;
 	private List<StateNode> children;
 	
-	//constructor
+	// constructor
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
@@ -28,6 +28,10 @@ public class StateNode {
 		children.add(child);
 	}	
 	
+	public void addChildren(StateNode child){
+		children.add(child);
+	}
+	
 	public void setId(int id) {
 		stateId = id;
 	}
@@ -40,7 +44,7 @@ public class StateNode {
 		return children;
 	}
 	
-	public List<StateNode> getChildrenByProperty(Set<StateNode>property) {
+	public List<StateNode> getChildrenByProperty(Set<StateNode> property) {
 		List<StateNode> validChildren = new ArrayList<StateNode>();
 		for (StateNode s: children){
 			if (property.contains(s)) {
@@ -49,4 +53,5 @@ public class StateNode {
 		}
 		return validChildren;
 	}
+	
 }

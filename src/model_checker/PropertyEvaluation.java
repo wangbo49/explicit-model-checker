@@ -1,24 +1,37 @@
 package model_checker;
 
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
+import java.awt.List;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;  
+import java.io.BufferedReader;  
+import java.io.BufferedWriter;  
+import java.io.FileInputStream;  
+import java.io.FileWriter;  
 
 public class PropertyEvaluation {
-	public Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
+	public HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
 	class WrongFormatException extends Exception {
 	}
 
 	checker c = new checker();
 
 	//constructor
-	public PropertyEvaluation(Hashtable<String, Set<StateNode>> atomicPropertyStateSet){
+	public PropertyEvaluation(HashMap<String, Set<StateNode>> atomicPropertyStateSet){
 		this.atomicPropertyStateSet = atomicPropertyStateSet;
 	}
 	
@@ -264,22 +277,79 @@ public class PropertyEvaluation {
 		preOrder(node.left);
 		preOrder(node.right);
 	}
+	
+	
+	
+	public static HashMap<Integer,StateNode> createStateNode(String pathname) throws IOException{
+		HashMap<Integer,StateNode> result = new HashMap<Integer,StateNode>();
+		Hashtable<Integer,ArrayList<Integer>> nodeResult = new Hashtable<>();
+		int nodeSetSize = 0;
+	    Boolean isFirstLine = true;
+		try{
+		    FileInputStream fstream = new FileInputStream(pathname);
+		    DataInputStream in = new DataInputStream(fstream);
+		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		    String strLine;
+		    
+		    while ((strLine = br.readLine()) != null) {
+				String[] tokens = strLine.split(" ");
+				if (isFirstLine){
+		    		nodeSetSize = Integer.parseInt(tokens[0]);
+		    		isFirstLine = false;
+		    	} else {
+		    		if (nodeResult.containsKey(Integer.parseInt(tokens[0]))) {
+						nodeResult.get(Integer.parseInt(tokens[0])).add(Integer.parseInt(tokens[1]));
+					} else{
+						StateNode newNode = new StateNode();
+						newNode.setId(Integer.parseInt(tokens[0]));
+						result.put(Integer.parseInt(tokens[0]), newNode);
+						ArrayList<Integer> children = new ArrayList<Integer>();
+						children.add(Integer.parseInt(tokens[1]));
+						nodeResult.put(Integer.parseInt(tokens[0]),children);
+					}
+		    	}
+				}
+		    in.close();
+		    }catch (Exception e){
+		        System.err.println("Error: " + e.getMessage());
+		    }
+		
+		    Set<Integer> keys = nodeResult.keySet();
+		    for(int key: keys){
+				for (int child:nodeResult.get(key)) {
+					result.get(key).addChildren(result.get(child));
+				}
+		    }
+		  if (result.size() == nodeSetSize) {
+			  return result;
+		  } else {
+			  System.out.println("not equivalant nodeSize");
+			  return null;
+		  }
+		  }
+        
+        
+
 
 	public static void main(String args[]) {
+		
 		//TODO call function to get the input statenode
 		//HashTable <StateNodeId, StateNode>
-		Hashtable<Integer,StateNode> stateTable = ;
-		Hashtable<String, Set<StateNode>> atomicPropertyStateSet = new Hashtable<String, Set<StateNode>>();
-		//if there is no property file
-		for(Integer nodeId : stateTable.keySet()){
-			String key = Integer.toString(nodeId);
-			Set<StateNode> value = new HashSet<StateNode>();
-			value.add(stateTable.get(nodeId));
-			atomicPropertyStateSet.put(key, value);
-		}
-		//if there is property file
+		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
 		try{
-			FileInputStream fstream = new FileInputStream(pathname);
+			stateTable = createStateNode("/Users/bowang/Desktop/file1.txt");
+		} catch(IOException i){
+			System.out.println("Error:IOException");
+		}
+		
+		HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
+		Set<StateNode> inputAll = new HashSet<StateNode>();
+		for(Integer i : stateTable.keySet()){
+			inputAll.add(stateTable.get(i));
+		}
+		try{
+			//if there is property file
+			FileInputStream fstream = new FileInputStream("");
 		    DataInputStream in = new DataInputStream(fstream);
 		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		    String strLine;
@@ -295,7 +365,15 @@ public class PropertyEvaluation {
 		    	}
 		    	atomicPropertyStateSet.put(key,value);
 		    }
-		} catch(Exception e){
+		}catch(FileNotFoundException f){
+			//if there is no property file
+			for(Integer nodeId : stateTable.keySet()){
+				String key = Integer.toString(nodeId);
+				Set<StateNode> value = new HashSet<StateNode>();
+				value.add(stateTable.get(nodeId));
+				atomicPropertyStateSet.put(key, value);
+			}
+		}catch(Exception e){
 			System.out.println("ErrorMessage:");
 		}
 		
@@ -356,5 +434,6 @@ public class PropertyEvaluation {
 		} catch (WrongFormatException e) {
 			System.out.println("Wrong Format!");
 		}
+
 	}
 }
