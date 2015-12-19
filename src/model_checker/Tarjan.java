@@ -30,15 +30,15 @@ public class Tarjan {
     		System.out.println("wow, property equals to null.");
     		return null;
     	}
-        visited = new Boolean[g.size()];
-        Arrays.fill(visited, Boolean.FALSE);
-        stack = new Stack<StateNode>();
-        low = new int[g.size()];
-//        sccComp = new HashSet<Set<StateNode>>();
+        this.visited = new Boolean[g.size()];
+        Arrays.fill(this.visited, Boolean.FALSE);
+        this.stack = new Stack<StateNode>();
+        this.low = new int[g.size()];
+        this.sccComp = new HashSet<Set<StateNode>>();
         for (int v = 0; v < g.size(); v++) {
-            if (!visited[v]) dfs(v,property);
+            if (!this.visited[v]) dfs(v,property);
         }     
-        return sccComp;
+        return this.sccComp;
     }
 
     private void dfs(int v, Set<StateNode> property) { 
