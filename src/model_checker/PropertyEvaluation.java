@@ -258,27 +258,28 @@ public class PropertyEvaluation {
 		}
 
 	}
-
-	/****************** Code for testing ******************/
-	/* Test Case 1: "EG((EF p) & (EG q))" done */
-	/* Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done */
-	/* Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done */
-	/* Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done */
-	public void preOrder(TreeNode node) {
-		if (node == null) {
-			System.out.println("#");
-			return;
-		}
-
-		if (node.isAtomicProperty)
-			System.out.println(node.atomicProperty);
-		else
-			System.out.println(node.operator);
-		preOrder(node.left);
-		preOrder(node.right);
+	
+	public static Set<StateNode> getReachableState(HashMap<Integer,StateNode> nodeResult, StateNode initialState){
+		
+		HashSet<StateNode> result = new HashSet<StateNode>();
+		Stack<StateNode> retrivalStack = new Stack<StateNode>();
+		if (nodeResult == null){
+			System.out.println("No node returned!");
+			return null;
+		} else {
+			retrivalStack.add(initialState);
+			while (retrivalStack != null) {
+				StateNode current = retrivalStack.pop();
+				result.add(current);
+				if (current.getChildren()!=null) {
+					for (StateNode child:current.getChildren()){
+						retrivalStack.add(child);
+					}
+				}
+			}
+			return result;
+			}
 	}
-	
-	
 	
 	public static HashMap<Integer,StateNode> createStateNode(String pathname) throws IOException{
 		HashMap<Integer,StateNode> result = new HashMap<Integer,StateNode>();
@@ -328,6 +329,33 @@ public class PropertyEvaluation {
 		  }
 		  }
         
+	
+	
+	
+	
+
+	/****************** Code for testing ******************/
+	/* Test Case 1: "EG((EF p) & (EG q))" done */
+	/* Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done */
+	/* Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done */
+	/* Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done */
+	public void preOrder(TreeNode node) {
+		if (node == null) {
+			System.out.println("#");
+			return;
+		}
+
+		if (node.isAtomicProperty)
+			System.out.println(node.atomicProperty);
+		else
+			System.out.println(node.operator);
+		preOrder(node.left);
+		preOrder(node.right);
+	}
+	
+	
+	
+	
         
 
 
