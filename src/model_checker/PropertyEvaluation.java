@@ -43,7 +43,7 @@ public class PropertyEvaluation {
 
 		for (int i = 0; i < s.length(); i++) {
 			Character c = s.charAt(i);
-			System.out.println(c);
+			
 			if (Character.isDigit(c) || Character.isLowerCase(c)) {
 				// when char c represents an atomic property
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
@@ -65,7 +65,6 @@ public class PropertyEvaluation {
 						TreeNode temp = values.pop();
 						pushValue(temp, values, operators);
 					} catch (EmptyStackException e) {
-						System.out.println("1");
 						throw new WrongFormatException();
 					}
 				}
@@ -77,7 +76,6 @@ public class PropertyEvaluation {
 			buildTree(operator, values, operators);
 		}
 		if (values.size() != 1){
-			System.out.println("2");
 			throw new WrongFormatException();
 		}
 			
@@ -178,39 +176,33 @@ public class PropertyEvaluation {
 
 			if (top == 'F' || top == 'G' || top == 'X') {
 				if (operators.peek() != 'A' && operators.peek() != 'E') {
-					System.out.println("3");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // A or E
 				sb.append(top);
 			} else if (top == 'U') {
 				if (operators.peek() != '(') {
-					System.out.println("4");
 					throw new WrongFormatException();
 				}
 				operators.pop(); // '('
 				if (operators.peek() != 'A' && operators.peek() != 'E') {
-					System.out.println("5");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // A or E
 				sb.append(top);
 			} else if (top == '>') {
 				if (operators.peek() != '-') {
-					System.out.println("6");
 					throw new WrongFormatException();
 				}
 				sb.append(operators.pop()); // '-'
 				sb.append(top);
 			} else {
 				if (top != '&' && top != '|' && top != '!' && top != '(') {
-					System.out.println("7");
 					throw new WrongFormatException();
 				}
 				sb.append(top);
 			}
 		} catch (EmptyStackException e) {
-			System.out.println("8");
 			throw new WrongFormatException();
 		}
 		return sb.toString();
@@ -236,7 +228,6 @@ public class PropertyEvaluation {
 			    .pop()));
 			newTree.right = tree;
 			if (values.size() == 0) {
-				System.out.println("10");
 				throw new WrongFormatException();
 			}
 			newTree.left = values.pop();
@@ -266,14 +257,13 @@ public class PropertyEvaluation {
 				pushValue(tree, values, operators);
 			}
 		} catch (EmptyStackException e) {
-			System.out.println("11");
 			throw new WrongFormatException();
 		}
 
 	}
 	
 	public static Set<StateNode> getReachableState(HashMap<Integer,StateNode> nodeResult, StateNode initialState){
-		
+		System.out.println("Wait");
 		HashSet<StateNode> result = new HashSet<StateNode>();
 		Stack<StateNode> retrivalStack = new Stack<StateNode>();
 		if (nodeResult == null){
@@ -281,13 +271,15 @@ public class PropertyEvaluation {
 			return null;
 		} else {
 			retrivalStack.add(initialState);
-			while (retrivalStack != null) {
+			while (!retrivalStack.isEmpty()) {
 				StateNode current = retrivalStack.pop();
 				result.add(current);
 				if (current.getChildren()!=null) {
 					for (StateNode child:current.getChildren()){
-						if (result.contains(child))
-						retrivalStack.add(child);
+
+						if(!result.contains(child)){
+							retrivalStack.add(child);
+						}
 					}
 				}
 			}
@@ -322,6 +314,12 @@ public class PropertyEvaluation {
 						children.add(Integer.parseInt(tokens[1]));
 						nodeResult.put(Integer.parseInt(tokens[0]),children);
 					}
+		    		
+		    		if(!result.containsKey(Integer.parseInt(tokens[1]))){
+		    			StateNode newNode = new StateNode();
+		    			newNode.setId(Integer.parseInt(tokens[1]));
+		    			result.put(Integer.parseInt(tokens[1]), newNode);
+		    		}
 		    	}
 				}
 		    in.close();
@@ -377,6 +375,7 @@ public class PropertyEvaluation {
 		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
 		try{
 			stateTable = createStateNode("/Users/AnyiWang/Downloads/file1.txt");
+
 		} catch(IOException i){
 			System.out.println("Error:IOException");
 		}
@@ -388,20 +387,27 @@ public class PropertyEvaluation {
 		}
 		try{
 			//if there is property file
-			FileInputStream fstream = new FileInputStream("");
-		    DataInputStream in = new DataInputStream(fstream);
-		    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			FileInputStream fstream1 = new FileInputStream("/Users/bowang/Desktop/file4.txt");
+		    DataInputStream in1 = new DataInputStream(fstream1);
+		    BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
 		    String strLine;
-		    while ((strLine = br.readLine()) != null) {
+		    while ((strLine = br1.readLine()) != null) {
 		    	//strLine format: p 1,2,3,4
 		    	int spaceIndex = strLine.indexOf(" ");
 		    	String key = strLine.substring(0,spaceIndex);
-		    	String left = strLine.substring(spaceIndex, strLine.length());
+		    	String left = strLine.substring(spaceIndex+1, strLine.length());
 		    	String[] states = left.split("\\,");
 		    	Set<StateNode> value = new HashSet<StateNode>();
 		    	for(int i=0; i<states.length; i++){
 		    		value.add(stateTable.get(Integer.parseInt(states[i])));
 		    	}
+		    	/*for(String i : atomicPropertyStateSet.keySet()){
+					Set<StateNode> set = atomicPropertyStateSet.get(i); 
+					for(StateNode n : set){
+						System.out.println(i + ": " + n.getId());
+						
+					}
+				}*/
 		    	atomicPropertyStateSet.put(key,value);
 		    }
 		}catch(FileNotFoundException f){
@@ -412,23 +418,22 @@ public class PropertyEvaluation {
 				value.add(stateTable.get(nodeId));
 				atomicPropertyStateSet.put(key, value);
 			}
-			for(String i : atomicPropertyStateSet.keySet()){
-				Set<StateNode> set = atomicPropertyStateSet.get(i); 
-				for(StateNode n : set){
-//					System.out.println(i + ": " + n.getId());
-					
-				}
-			}
+
 		}catch(Exception e){
 			System.out.println("ErrorMessage:");
 		}
 		
-		
+
 		//E((EX(p -> q)) U (EX !E(p U q)))
 //		String test = "E((EX(p -> q)) U (EX !E(p U q)))";*/
-		String test = "EG 1";
+		String test = "EF q";
 		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
 		try {
+			Set<StateNode> reach =  getReachableState(stateTable,stateTable.get(15));
+			for(StateNode each : reach){
+				System.out.println("Reachable:" + each.getId());
+			}
+			
 			TreeNode r = t.parse(test);
 			t.preOrder(r);
 			Set<StateNode> result = t.evaluate(inputAll, r);
@@ -441,7 +446,6 @@ public class PropertyEvaluation {
 				}
 			}			
 		} catch (WrongFormatException e) {
-			System.out.println("12");
 			System.out.println("Wrong Format!");
 		}
 

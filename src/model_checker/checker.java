@@ -50,8 +50,8 @@ public class checker {
 	//model checker for E(property1 until property2)
 	public Set<StateNode> untilChecker(Set<StateNode> input1, Set<StateNode> input2 ){
 		Set<StateNode> result = new HashSet<StateNode>();
-		Set<StateNode> subList = new HashSet<StateNode>();
 		
+		Set<StateNode> subList = new HashSet<StateNode>();
 		for(StateNode node : input2) {
 			subList.add(node);
 			result.add(node);
