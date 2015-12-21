@@ -168,8 +168,7 @@ public class PropertyEvaluation {
 			if (s.charAt(i) != (' '))
 				result.append(s.charAt(i));
 		}
-
-		return result.toString();
+        return result.toString();
 	}
 
 	// method to recognize each operator and pop each operator from stack
