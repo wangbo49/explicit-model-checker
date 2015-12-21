@@ -6,21 +6,11 @@ import java.util.Set;
 
 public class StateNode {
 	private int stateId;
-	private List<Boolean> property;
 	private List<StateNode> children;
 	
 	// constructor
 	public StateNode(){
-		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
-	}
-	
-	public void setProperty(boolean p){
-		property.add(p);
-	}
-	
-	public Boolean getPorperty(int index){
-		return property.get(index);
 	}
 	
 	public void setChildren(StateNode child){

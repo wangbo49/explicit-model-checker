@@ -50,7 +50,6 @@ public class PropertyEvaluation {
 			
 			if (Character.isDigit(c) || Character.isLowerCase(c)) {
 				// when char c represents an atomic property
-				System.out.println(c);
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
 				pushValue(tree, values, operators);
 			} else {
@@ -391,10 +390,13 @@ public class PropertyEvaluation {
 		//Iteractive Terminal
 
 		while(true){
+			System.out.println("*************************************");
+			System.out.println("Welcome to use Model Checker");
+			System.out.println("*************************************");
 			Scanner scanner = new Scanner(System.in);
-			System.out.println("Path of the first file(required):");
+			System.out.println("Path of State Number and Transition File (required):");
 			String filePath1 = scanner.nextLine();
-			System.out.println("Path of the second file(optional):");
+			System.out.println("Path of Atomic Proposition File (optional):");
 			String filePath2 = scanner.nextLine();
 			System.out.println("Function: (1) Reachbility Check (2) Property Check");
 			int index = scanner.nextInt();
@@ -438,8 +440,12 @@ public class PropertyEvaluation {
 					if (result == null) {
 						System.out.println("there is no result that satisfies the rule");
 					} else {
-						for(StateNode s : result){
-							System.out.println(s.getId());
+						if(result.size() == 0) System.out.println("False: no staetes satisfying the rule!");
+						else {
+							System.out.println("True: states satisfying the rule are");
+							for(StateNode s : result){
+								System.out.println(s.getId());
+							}
 						}
 					}
 				}				
