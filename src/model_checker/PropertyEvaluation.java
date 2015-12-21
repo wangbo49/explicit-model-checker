@@ -10,6 +10,7 @@ import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
 import java.awt.List;
@@ -27,6 +28,10 @@ public class PropertyEvaluation {
 	public HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
 	class WrongFormatException extends Exception {
 	}
+	
+	class AtomicPropertyNotExistException extends Exception{
+		
+	}
 
 	checker c = new checker();
 
@@ -40,12 +45,12 @@ public class PropertyEvaluation {
 		String s = removeSpace(property);
 		Stack<TreeNode> values = new Stack<TreeNode>();
 		Stack<Character> operators = new Stack<Character>();
-
 		for (int i = 0; i < s.length(); i++) {
 			Character c = s.charAt(i);
 			
 			if (Character.isDigit(c) || Character.isLowerCase(c)) {
 				// when char c represents an atomic property
+				System.out.println(c);
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
 				pushValue(tree, values, operators);
 			} else {
@@ -83,13 +88,14 @@ public class PropertyEvaluation {
 	}
 
 	// method to evaluate the parse tree
-	public Set<StateNode> evaluate(Set<StateNode> allinput, TreeNode tree) {
+	public Set<StateNode> evaluate(Set<StateNode> allinput, TreeNode tree) throws AtomicPropertyNotExistException{
 		Set<StateNode> result = new HashSet<StateNode>();
 
 		if (tree.isAtomicProperty) {
-			return atomicPropertyStateSet.get(tree.atomicProperty); // hashTable.get[p]
-			                                                        // --> set of
-			                                                        // state nodes
+			if(atomicPropertyStateSet.containsKey(tree.atomicProperty))
+			return atomicPropertyStateSet.get(tree.atomicProperty); 
+			else
+			throw new AtomicPropertyNotExistException();
 		}
 
 		if (tree.operator.equals("EX")) {
@@ -263,21 +269,25 @@ public class PropertyEvaluation {
 	}
 	
 	public static Set<StateNode> getReachableState(HashMap<Integer,StateNode> nodeResult, StateNode initialState){
-		System.out.println("Wait");
+		
 		HashSet<StateNode> result = new HashSet<StateNode>();
 		Stack<StateNode> retrivalStack = new Stack<StateNode>();
+		
 		if (nodeResult == null){
 			System.out.println("No node returned!");
 			return null;
 		} else {
 			retrivalStack.add(initialState);
+			int count = 0;
 			while (!retrivalStack.isEmpty()) {
 				StateNode current = retrivalStack.pop();
-				result.add(current);
+				if(count !=0 ){
+					result.add(current);
+				}	
+				count++;
 				if (current.getChildren()!=null) {
 					for (StateNode child:current.getChildren()){
-
-						if(!result.contains(child)){
+						if(!result.contains(child) && !retrivalStack.contains(child)){
 							retrivalStack.add(child);
 						}
 					}
@@ -339,18 +349,114 @@ public class PropertyEvaluation {
 			  System.out.println("not equivalant nodeSize");
 			  return null;
 		  }
-		  }
-        
-	
-	
-	
+	}
 	
 
+	public static HashMap<String, Set<StateNode>> createAtomicPropertyStateSet(HashMap<Integer, StateNode> stateTable, String pathname){
+		HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
+		try{
+			//if there is property file
+			FileInputStream fstream1 = new FileInputStream(pathname);
+		    DataInputStream in1 = new DataInputStream(fstream1);
+		    BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
+		    String strLine;
+		    while ((strLine = br1.readLine()) != null) {
+		    	int spaceIndex = strLine.indexOf(" ");
+		    	String key = strLine.substring(0,spaceIndex);
+		    	String left = strLine.substring(spaceIndex+1, strLine.length());
+		    	String[] states = left.split("\\,");
+		    	Set<StateNode> value = new HashSet<StateNode>();
+		    	for(int i=0; i<states.length; i++){
+		    		value.add(stateTable.get(Integer.parseInt(states[i])));
+		    	}
+		    	atomicPropertyStateSet.put(key,value);
+		    }
+		}catch(FileNotFoundException f){
+			//if there is no property file
+			for(Integer nodeId : stateTable.keySet()){
+				String key = Integer.toString(nodeId);
+				Set<StateNode> value = new HashSet<StateNode>();
+				value.add(stateTable.get(nodeId));
+				atomicPropertyStateSet.put(key, value);
+			}
+
+			return atomicPropertyStateSet;
+		}catch(Exception e){
+			System.out.println("ErrorMessage:");
+		}
+		return atomicPropertyStateSet;
+	}
+        
+	public static void main(String args[]) {
+		//Iteractive Terminal
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Path of the first file(required):");
+		String filePath1 = scanner.next();
+		System.out.println("Path of the second file(optional):");
+		String filePath2 = scanner.next();
+		System.out.println("Function: (1) Reachbility Check (2) Property Check");
+		int index = scanner.nextInt();
+		int initialStateIndex = 0;
+		String testProperty = null;
+		if(index == 1){
+			System.out.println("Initial State:");
+			initialStateIndex = scanner.nextInt();
+		}else{
+			System.out.println("Property to be tested:");
+			scanner.nextLine();
+			testProperty =scanner.nextLine(); 
+		}
+		
+		//build stateTable 
+		HashMap<Integer, StateNode> stateTable = new HashMap<Integer, StateNode>();
+		try{
+			stateTable = createStateNode(filePath1);
+		} catch(IOException i){
+			System.out.println("Error:IOException");
+		}
+		//build inputAll
+		Set<StateNode> inputAll = new HashSet<StateNode>();
+		for(Integer i : stateTable.keySet()){
+			inputAll.add(stateTable.get(i));
+		}
+		//build atomicPropertyStateSet
+		HashMap<String, Set<StateNode>> atomicPropertyStateSet = createAtomicPropertyStateSet(stateTable, filePath2);
+		
+		
+
+		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
+		try {
+			if(index == 1){
+				Set<StateNode> reachableSet =  getReachableState(stateTable, stateTable.get(initialStateIndex));
+				for(StateNode each : reachableSet){
+					System.out.println("Reachable:" + each.getId());
+				}
+			}else if(index == 2){
+				TreeNode r = t.parse(testProperty);
+				t.preOrder(r);
+				Set<StateNode> result = t.evaluate(inputAll, r);
+				if (result == null) {
+					System.out.println("there is no result that satisfies the rule");
+				} else {
+					for(StateNode s : result){
+						System.out.println(s.getId());
+					}
+				}
+			}				
+		} catch (WrongFormatException e) {
+			System.out.println("Wrong Format!");
+		} catch (AtomicPropertyNotExistException a){
+			System.out.println("Error: Atomic Property not Exist");
+		}
+
+	}
+	
 	/****************** Code for testing ******************/
 	/* Test Case 1: "EG((EF p) & (EG q))" done */
 	/* Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done */
 	/* Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done */
 	/* Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done */
+	
 	public void preOrder(TreeNode node) {
 		if (node == null) {
 			System.out.println("#");
@@ -363,91 +469,5 @@ public class PropertyEvaluation {
 			System.out.println(node.operator);
 		preOrder(node.left);
 		preOrder(node.right);
-	}
-	
-	
- 
-
-	public static void main(String args[]) {
-		
-		//TODO call function to get the input statenode
-		//HashTable <StateNodeId, StateNode>
-		HashMap<Integer, StateNode> stateTable = new HashMap<Integer,StateNode>();
-		try{
-			stateTable = createStateNode("/Users/AnyiWang/Downloads/file1.txt");
-
-		} catch(IOException i){
-			System.out.println("Error:IOException");
-		}
-		
-		HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
-		Set<StateNode> inputAll = new HashSet<StateNode>();
-		for(Integer i : stateTable.keySet()){
-			inputAll.add(stateTable.get(i));
-		}
-		try{
-			//if there is property file
-			FileInputStream fstream1 = new FileInputStream("/Users/bowang/Desktop/file4.txt");
-		    DataInputStream in1 = new DataInputStream(fstream1);
-		    BufferedReader br1 = new BufferedReader(new InputStreamReader(in1));
-		    String strLine;
-		    while ((strLine = br1.readLine()) != null) {
-		    	//strLine format: p 1,2,3,4
-		    	int spaceIndex = strLine.indexOf(" ");
-		    	String key = strLine.substring(0,spaceIndex);
-		    	String left = strLine.substring(spaceIndex+1, strLine.length());
-		    	String[] states = left.split("\\,");
-		    	Set<StateNode> value = new HashSet<StateNode>();
-		    	for(int i=0; i<states.length; i++){
-		    		value.add(stateTable.get(Integer.parseInt(states[i])));
-		    	}
-		    	/*for(String i : atomicPropertyStateSet.keySet()){
-					Set<StateNode> set = atomicPropertyStateSet.get(i); 
-					for(StateNode n : set){
-						System.out.println(i + ": " + n.getId());
-						
-					}
-				}*/
-		    	atomicPropertyStateSet.put(key,value);
-		    }
-		}catch(FileNotFoundException f){
-			//if there is no property file
-			for(Integer nodeId : stateTable.keySet()){
-				String key = Integer.toString(nodeId);
-				Set<StateNode> value = new HashSet<StateNode>();
-				value.add(stateTable.get(nodeId));
-				atomicPropertyStateSet.put(key, value);
-			}
-
-		}catch(Exception e){
-			System.out.println("ErrorMessage:");
-		}
-		
-
-		//E((EX(p -> q)) U (EX !E(p U q)))
-//		String test = "E((EX(p -> q)) U (EX !E(p U q)))";*/
-		String test = "EF q";
-		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
-		try {
-			Set<StateNode> reach =  getReachableState(stateTable,stateTable.get(15));
-			for(StateNode each : reach){
-				System.out.println("Reachable:" + each.getId());
-			}
-			
-			TreeNode r = t.parse(test);
-			t.preOrder(r);
-			Set<StateNode> result = t.evaluate(inputAll, r);
-			if (result == null) {
-				System.out.println("there is no result that satisfies the rule");
-				
-			} else {
-				for(StateNode s : result){
-					System.out.println(s.getId());
-				}
-			}			
-		} catch (WrongFormatException e) {
-			System.out.println("Wrong Format!");
-		}
-
 	}
 }

@@ -31,6 +31,7 @@ public class Tarjan {
     		System.out.println("In Tarjain, the property equals to null.");
     		return null;
     	}
+    	V = g.size();
         visited = new Boolean[g.size()];
         Arrays.fill(this.visited, Boolean.FALSE);
         stack = new Stack<StateNode>();
@@ -68,7 +69,7 @@ public class Tarjan {
                 m = stack.pop();
                 component.add(m);
                 low[m.getId()] = V;
-            } while (m.getId() != V);
+            } while (m.getId() != v);
         	sccComp.add(component);
             count++;
         } else {
