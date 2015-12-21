@@ -101,14 +101,6 @@ public class checker {
 	}
 	
 	
-	public Graph generateGraph(Set<StateNode> nodes) {
-		Graph g = new Graph();
-		for (StateNode s : nodes) {
-		    g.addNode(s);
-		}
-		return g;
-	}
-	
 	// model checker for EG property
 	public Set<StateNode> alwaysChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
 		Set<StateNode> result = new HashSet<StateNode>();

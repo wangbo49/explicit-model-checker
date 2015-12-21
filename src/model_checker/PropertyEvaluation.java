@@ -463,7 +463,6 @@ public class PropertyEvaluation {
 //			System.out.println("node == null");
 			return;
 		}
-
 		if (node.isAtomicProperty)
 			System.out.println(node.atomicProperty);
 		else
