@@ -287,6 +287,7 @@ public class PropertyEvaluation {
 				count++;
 				if (current.getChildren()!=null) {
 					for (StateNode child:current.getChildren()){
+
 						if(!result.contains(child) && !retrivalStack.contains(child)){
 							retrivalStack.add(child);
 						}
@@ -459,7 +460,7 @@ public class PropertyEvaluation {
 	
 	public void preOrder(TreeNode node) {
 		if (node == null) {
-			System.out.println("#");
+//			System.out.println("node == null");
 			return;
 		}
 
