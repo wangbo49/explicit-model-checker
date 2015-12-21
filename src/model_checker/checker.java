@@ -118,16 +118,23 @@ public class checker {
 	        }
 	    }
 	    
-		Set<StateNode> finalResult = new HashSet<StateNode>();
-	    for (StateNode s:inputAll) {
-	    	if (input1.contains(s)) {
-	    		for (StateNode sc:s.getChildren()) {
-	    			if (result.contains(sc) && !finalResult.contains(s)) {
-	    				finalResult.add(s);
-	    			}
-	    		}
-	    	}
+	    Set<StateNode> finalResult = new HashSet<StateNode>();
+	    Boolean isUpdate = true;
+	    while (isUpdate) {
+	    	isUpdate = false;
+	    	for (StateNode s:inputAll) {
+		    	if (input1.contains(s)) {
+		    		for (StateNode sc:s.getChildren()) {
+		    			if (result.contains(sc) && !finalResult.contains(s)) {
+		    				finalResult.add(s);
+		    				isUpdate = true;
+		    			}
+		    		}
+		    	}
+		    }	    	
 	    }
+		
+	   
 		return finalResult;    
 		
 	}
