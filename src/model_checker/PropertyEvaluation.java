@@ -387,65 +387,65 @@ public class PropertyEvaluation {
         
 	public static void main(String args[]) {
 		//Iteractive Terminal
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Path of the first file(required):");
-		String filePath1 = scanner.next();
-		System.out.println("Path of the second file(optional):");
-		String filePath2 = scanner.next();
-		System.out.println("Function: (1) Reachbility Check (2) Property Check");
-		int index = scanner.nextInt();
-		int initialStateIndex = 0;
-		String testProperty = null;
-		if(index == 1){
-			System.out.println("Initial State:");
-			initialStateIndex = scanner.nextInt();
-		}else{
-			System.out.println("Property to be tested:");
-			scanner.nextLine();
-			testProperty =scanner.nextLine(); 
-		}
-		
-		//build stateTable 
-		HashMap<Integer, StateNode> stateTable = new HashMap<Integer, StateNode>();
-		try{
-			stateTable = createStateNode(filePath1);
-		} catch(IOException i){
-			System.out.println("Error:IOException");
-		}
-		//build inputAll
-		Set<StateNode> inputAll = new HashSet<StateNode>();
-		for(Integer i : stateTable.keySet()){
-			inputAll.add(stateTable.get(i));
-		}
-		//build atomicPropertyStateSet
-		HashMap<String, Set<StateNode>> atomicPropertyStateSet = createAtomicPropertyStateSet(stateTable, filePath2);
-		
-		
-		PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
-		try {
+		while(true){
+			Scanner scanner = new Scanner(System.in);
+			System.out.println("Path of the first file(required):");
+			String filePath1 = scanner.nextLine();
+			System.out.println("Path of the second file(optional):");
+			String filePath2 = scanner.nextLine();
+			System.out.println("Function: (1) Reachbility Check (2) Property Check");
+			int index = scanner.nextInt();
+			int initialStateIndex = 0;
+			String testProperty = null;
 			if(index == 1){
-				Set<StateNode> reachableSet =  getReachableState(stateTable, stateTable.get(initialStateIndex));
-				for(StateNode each : reachableSet){
-					System.out.println("Reachable:" + each.getId());
-				}
-			}else if(index == 2){
-				TreeNode r = t.parse(testProperty);
-				t.preOrder(r);
-				Set<StateNode> result = t.evaluate(inputAll, r);
-				if (result == null) {
-					System.out.println("there is no result that satisfies the rule");
-				} else {
-					for(StateNode s : result){
-						System.out.println(s.getId());
+				System.out.println("Initial State:");
+				initialStateIndex = scanner.nextInt();
+			}else{
+				System.out.println("Property to be tested:");
+				scanner.nextLine();
+				testProperty =scanner.nextLine(); 
+			}
+			
+			//build stateTable 
+			HashMap<Integer, StateNode> stateTable = new HashMap<Integer, StateNode>();
+			try{
+				stateTable = createStateNode(filePath1);
+			} catch(IOException i){
+				System.out.println("Error:IOException");
+			}
+			//build inputAll
+			Set<StateNode> inputAll = new HashSet<StateNode>();
+			for(Integer i : stateTable.keySet()){
+				inputAll.add(stateTable.get(i));
+			}
+			//build atomicPropertyStateSet
+			HashMap<String, Set<StateNode>> atomicPropertyStateSet = createAtomicPropertyStateSet(stateTable, filePath2);
+			
+			
+			PropertyEvaluation t = new PropertyEvaluation(atomicPropertyStateSet);
+			try {
+				if(index == 1){
+					Set<StateNode> reachableSet =  getReachableState(stateTable, stateTable.get(initialStateIndex));
+					for(StateNode each : reachableSet){
+						System.out.println("Reachable:" + each.getId());
 					}
-				}
-			}				
-		} catch (WrongFormatException e) {
-			System.out.println("Wrong Format!");
-		} catch (AtomicPropertyNotExistException a){
-			System.out.println("Error: Atomic Property not Exist");
+				}else if(index == 2){
+					TreeNode r = t.parse(testProperty);
+					Set<StateNode> result = t.evaluate(inputAll, r);
+					if (result == null) {
+						System.out.println("there is no result that satisfies the rule");
+					} else {
+						for(StateNode s : result){
+							System.out.println(s.getId());
+						}
+					}
+				}				
+			} catch (WrongFormatException e) {
+				System.out.println("Wrong Format!");
+			} catch (AtomicPropertyNotExistException a){
+				System.out.println("Error: Atomic Property not Exist");
+			}
 		}
-
 	}
 	
 	/****************** Code for testing ******************/
