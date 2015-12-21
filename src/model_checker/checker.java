@@ -104,6 +104,7 @@ public class checker {
 	// model checker for EG property
 	public Set<StateNode> alwaysChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
 		Set<StateNode> result = new HashSet<StateNode>();
+
 		List<StateNode> graph = new ArrayList<StateNode>(inputAll);
 		Tarjan t = new Tarjan();
 	    List<List<StateNode>> sccComponents = t.getSccComponents(graph,input1);
@@ -116,7 +117,18 @@ public class checker {
 	        	result.addAll(s);
 	        }
 	    }
-		return result;    
+	    
+		Set<StateNode> finalResult = new HashSet<StateNode>();
+	    for (StateNode s:inputAll) {
+	    	if (input1.contains(s)) {
+	    		for (StateNode sc:s.getChildren()) {
+	    			if (result.contains(sc) && !finalResult.contains(s)) {
+	    				finalResult.add(s);
+	    			}
+	    		}
+	    	}
+	    }
+		return finalResult;    
 		
 	}
 }
