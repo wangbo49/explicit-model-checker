@@ -9,105 +9,64 @@ import java.util.Stack;
 
 public class Tarjan {
 
-    private int V;
-    private Graph g;
+	private List<StateNode> graph;
 	private Boolean[] visited;        // marked[v] = has v been visited?
-    private int[] id;                // id[v] = id of strong component containing v
-    private int[] low;               // low[v] = low number of v
-    private int pre;                 // preorder number counter
-    private int count;               // number of strongly-connected components
+    private int[] lowlink;               // low[v] = low number of v
+    private int time;                 // preorder number counter
     private Stack<StateNode> stack;
-    private Set<Set<StateNode>> sccComp;
+    private List<List<StateNode>> sccComp;
 
     /**
      * Computes the strong components of the digraph <tt>G</tt>.
      * @param List of nodes
      */
     
-    public Set<Set<StateNode>> getSccComponents(Graph g, Set<StateNode> property) {
-    	this.g =  g;
+    public List<List<StateNode>> getSccComponents(List<StateNode> graph, Set<StateNode> property) {
+    	this.graph =  graph;
+    	time = 0;
     	if (property==null){
-    		System.out.println("wow, property equals to null.");
+    		System.out.println("In Tarjain, the property equals to null.");
     		return null;
     	}
-        this.visited = new Boolean[g.size()];
+    	int n = graph.size();
+        visited = new Boolean[n];
         Arrays.fill(this.visited, Boolean.FALSE);
-        this.stack = new Stack<StateNode>();
-        this.low = new int[g.size()];
-        this.sccComp = new HashSet<Set<StateNode>>();
-        for (int v = 0; v < g.size(); v++) {
-            if (!this.visited[v]) dfs(v,property);
-        }     
-        return this.sccComp;
+        stack = new Stack<StateNode>();
+        lowlink = new int[n];
+        sccComp = new ArrayList<>();
+        for (int v = 0; v < n; v++) {
+            if (!visited[v]) dfs(v,property);
+        }
+        return sccComp;
     }
 
     private void dfs(int v, Set<StateNode> property) { 
     	visited[v] = true;
-        low[v] = pre++;
-        int min = low[v];
-        stack.push(g.getNode(v));
-        for (StateNode k : g.getNode(v).getChildrenByProperty(property)) {
-        	int w = k.getId();
+        lowlink[v] = time++;
+        stack.add(graph.get(v));
+        boolean isComponentRoot = true;
+        for (StateNode k : graph.get(v).getChildrenByProperty(property)) {
+        	int w = graph.indexOf(k);
             if (!visited[w]) dfs(w,property);
-            if (low[w] < min) min = low[w];
+            if (lowlink[v] > lowlink[w]) {
+            	lowlink[v] = lowlink[w];
+            	isComponentRoot = false;
+            }
         }
-        if (min < low[v]) {
-            low[v] = min;
-            return;
+        if (isComponentRoot){
+        List<StateNode> component = new ArrayList<StateNode>();
+        while (true) {
+        	StateNode x = stack.pop();
+        	component.add(x);
+        	lowlink[graph.indexOf(x)] = Integer.MAX_VALUE;
+        	if(graph.indexOf(x) == v) {
+        		break;
+        	}
+        	sccComp.add(component);
+        	}
         }
-        
-        Set<StateNode> component = new HashSet<StateNode>();
-        StateNode m = new StateNode();
-        do {
-            m = stack.pop();
-            component.add(m);
-            low[m.getId()] = V;
-        } while (m.getId() != V);
-        sccComp.add(component);
-        count++;
     }
 
-    /**
-     * Returns the number of strong components.
-     * @return the number of strong components
-     */
-    public int count() {
-        return count;
-    }
-    
-    /**
-     * Get the index of one StateNode
-     * @return index 
-     */
-    
-    public int getIdx(Graph G, StateNode v) {
-    	for (int w = 0; w< G.size();w++) {
-    		if (G.getNode(w) == v) {
-    			return w;
-    		}
-    	}
-    	return -1; 	
-    }
   
 }
 
-
-///** main **/
-//public static void main(String[] args)
-//{    
-//    Scanner scan = new Scanner(System.in);
-//    System.out.println("Tarjan algorithm Test\n");
-//    System.out.println("Enter number of Vertices");
-//    /** number of vertices **/
-//    int V = scan.nextInt();
-//
-//    /** TODO: make graph g**/
-//   
-//
-//    Tarjan t = new Tarjan();        
-//    System.out.println("\nSCC : ");
-//    /** print all strongly connected components **/
-//    List<List<Integer>> scComponents = t.getSCComponents(g);
-//       System.out.println(scComponents);        
-//}    
-//}

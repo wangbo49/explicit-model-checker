@@ -13,7 +13,6 @@ public class StateNode {
 	public StateNode(){
 		property = new ArrayList<Boolean>();
 		children = new ArrayList<StateNode>();
-		stateId = 0;
 	}
 	
 	public void setProperty(boolean p){

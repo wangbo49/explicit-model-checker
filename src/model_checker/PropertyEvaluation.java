@@ -168,8 +168,7 @@ public class PropertyEvaluation {
 			if (s.charAt(i) != (' '))
 				result.append(s.charAt(i));
 		}
-
-		return result.toString();
+        return result.toString();
 	}
 
 	// method to recognize each operator and pop each operator from stack
@@ -287,6 +286,7 @@ public class PropertyEvaluation {
 				count++;
 				if (current.getChildren()!=null) {
 					for (StateNode child:current.getChildren()){
+
 						if(!result.contains(child) && !retrivalStack.contains(child)){
 							retrivalStack.add(child);
 						}
@@ -351,6 +351,7 @@ public class PropertyEvaluation {
 		  }
 	}
 	
+
 	public static HashMap<String, Set<StateNode>> createAtomicPropertyStateSet(HashMap<Integer, StateNode> stateTable, String pathname){
 		HashMap<String, Set<StateNode>> atomicPropertyStateSet = new HashMap<String, Set<StateNode>>();
 		try{
@@ -378,6 +379,7 @@ public class PropertyEvaluation {
 				value.add(stateTable.get(nodeId));
 				atomicPropertyStateSet.put(key, value);
 			}
+
 			return atomicPropertyStateSet;
 		}catch(Exception e){
 			System.out.println("ErrorMessage:");
@@ -387,6 +389,7 @@ public class PropertyEvaluation {
         
 	public static void main(String args[]) {
 		//Iteractive Terminal
+
 		while(true){
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("Path of the first file(required):");
@@ -453,12 +456,12 @@ public class PropertyEvaluation {
 	/* Test Case 2: "E((EX(p ^ q)) U (AF E(p U q)))" done */
 	/* Test Case 3: "E((EX(p -> q)) U (AF E(p U q)))" done */
 	/* Test Case 4: "E((EX(p -> q)) U (AF !E(p U q)))" done */
+	
 	public void preOrder(TreeNode node) {
 		if (node == null) {
-			System.out.println("#");
+//			System.out.println("node == null");
 			return;
 		}
-
 		if (node.isAtomicProperty)
 			System.out.println(node.atomicProperty);
 		else

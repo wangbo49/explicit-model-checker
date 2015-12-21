@@ -50,8 +50,8 @@ public class checker {
 	//model checker for E(property1 until property2)
 	public Set<StateNode> untilChecker(Set<StateNode> input1, Set<StateNode> input2 ){
 		Set<StateNode> result = new HashSet<StateNode>();
-		Set<StateNode> subList = new HashSet<StateNode>();
 		
+		Set<StateNode> subList = new HashSet<StateNode>();
 		for(StateNode node : input2) {
 			subList.add(node);
 			result.add(node);
@@ -101,25 +101,17 @@ public class checker {
 	}
 	
 	
-	public Graph generateGraph(Set<StateNode> nodes) {
-		Graph g = new Graph();
-		for (StateNode s : nodes) {
-		    g.addNode(s);
-		}
-		return g;
-	}
-	
 	// model checker for EG property
 	public Set<StateNode> alwaysChecker(Set<StateNode> inputAll, Set<StateNode> input1) {
 		Set<StateNode> result = new HashSet<StateNode>();
+		List<StateNode> graph = new ArrayList<StateNode>(inputAll);
 		Tarjan t = new Tarjan();
-		Graph g = generateGraph(inputAll);
-	    Set<Set<StateNode>> sccComponents = t.getSccComponents(g,input1);
+	    List<List<StateNode>> sccComponents = t.getSccComponents(graph,input1);
 	    if(sccComponents == null) {
 	    	System.out.println("no sccComponenets");
 	    	return null;
 	    }
-	    for (Set<StateNode> s : sccComponents) {
+	    for (List<StateNode> s : sccComponents) {
 	        if (s.size() > 1) {
 	        	result.addAll(s);
 	        }
