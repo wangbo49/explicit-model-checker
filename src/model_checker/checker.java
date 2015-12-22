@@ -131,9 +131,9 @@ public class checker {
 		    			}
 		    		}
 		    	}
-		    }	    	
+		    }
+	    	result = finalResult;
 	    }
-		
 	   
 		return finalResult;    
 		
