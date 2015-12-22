@@ -115,7 +115,14 @@ public class checker {
 	    for (List<StateNode> s : sccComponents) {
 	        if (s.size() > 1) {
 	        	result.addAll(s);
-	        }
+	        } 
+	    }
+	    
+	    // add self-loop non-trival sccComponents
+	    for (StateNode s:input1) {
+	    	if (s.getChildren().contains(s) && !result.contains(s)) {
+	    		result.add(s);
+	    	}
 	    }
 	    
 	    Set<StateNode> finalResult = new HashSet<StateNode>();
