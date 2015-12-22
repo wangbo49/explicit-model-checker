@@ -6,14 +6,15 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
-import java.awt.List;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,14 +46,21 @@ public class PropertyEvaluation {
 		String s = removeSpace(property);
 		Stack<TreeNode> values = new Stack<TreeNode>();
 		Stack<Character> operators = new Stack<Character>();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
 			Character c = s.charAt(i);
-			
-			if (Character.isDigit(c) || Character.isLowerCase(c)) {
-				// when char c represents an atomic property
+			if(Character.isLowerCase(c)){
 				TreeNode tree = new TreeNode(true, Character.toString(c), null);
 				pushValue(tree, values, operators);
-			} else {
+			}else if(Character.isDigit(c)){
+				sb.append(c);
+				continue;	
+			}else {
+				if(sb.length() != 0){
+					TreeNode tree = new TreeNode(true, sb.toString(), null);
+					pushValue(tree, values, operators);
+					sb = new StringBuilder();
+				}
 				if (c != ')')
 					// when char is not ')', put it into stack operators
 					operators.push(c);
@@ -73,6 +81,11 @@ public class PropertyEvaluation {
 					}
 				}
 			}
+		}
+		if(sb.length() != 0){
+			TreeNode tree = new TreeNode(true, sb.toString(), null);
+			pushValue(tree, values, operators);
+			sb = new StringBuilder();
 		}
 
 		while (operators.size() != 0) {
@@ -385,6 +398,16 @@ public class PropertyEvaluation {
 		}
 		return atomicPropertyStateSet;
 	}
+	
+	private static List<Integer> sortResult (Set<StateNode> input){
+		List<Integer> list = new ArrayList<Integer>();
+		for(StateNode node : input){
+			list.add(node.getId());
+		}
+		java.util.Collections.sort(list);
+		 return list;		
+	}
+
         
 	public static void main(String args[]) {
 		//Iteractive Terminal
@@ -431,8 +454,8 @@ public class PropertyEvaluation {
 			try {
 				if(index == 1){
 					Set<StateNode> reachableSet =  getReachableState(stateTable, stateTable.get(initialStateIndex));
-					for(StateNode each : reachableSet){
-						System.out.println("Reachable:" + each.getId());
+					for(Integer each : PropertyEvaluation.sortResult(reachableSet)){
+						System.out.println("Reachable:" + each);
 					}
 				}else if(index == 2){
 					TreeNode r = t.parse(testProperty);
@@ -443,8 +466,8 @@ public class PropertyEvaluation {
 						if(result.size() == 0) System.out.println("False: no staetes satisfying the rule!");
 						else {
 							System.out.println("True: states satisfying the rule are");
-							for(StateNode s : result){
-								System.out.println(s.getId());
+							for(Integer i : PropertyEvaluation.sortResult(result)){
+								System.out.println(i);
 							}
 						}
 					}
